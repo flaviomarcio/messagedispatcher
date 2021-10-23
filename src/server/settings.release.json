@@ -1,0 +1,39 @@
+{
+   "arguments":["ws"],
+   "protocol":{
+      "default":{
+         "minThreads":1,
+         "maxThreads":200,
+         "cleanupInterval":1000,
+         "readTimeout":60000,
+         "maxRequestSize":104857600,
+         "maxMultiPartSize":1048576000,
+         "enabled":false,
+         "sslKeyFile":"",
+         "sslCertFile":""
+      },
+      "http":{"enabled":true, "port":[8085]}
+   },
+    "connection":{
+        "secret": "YzUxNDFhMDA5",
+        "enviroment" : "production",
+        "paramaters" : {
+            "production":{
+                 "driver" : "QPSQL"
+                ,"hostName" : "127.0.0.1"
+                ,"userName" : "magmav1"
+                ,"password" : "magmav1"
+                ,"port" : 5432
+                ,"dataBaseName" : "magmav1"
+                ,"schemaNames" : "public, msg_v1"
+            }
+        }
+    },
+    "services":{
+        "default":{"enabled":false},
+        "dispacher-sms":{},
+        "dispacher-sms":{},
+        "dispacher-sms":{},
+        "dispacher-sms":{}
+    }
+}
