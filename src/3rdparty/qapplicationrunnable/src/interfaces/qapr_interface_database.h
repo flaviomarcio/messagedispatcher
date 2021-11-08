@@ -8,58 +8,63 @@ const static QVariantHash flags_connection_db_transaction{{qsl("connection_db_tr
 
 namespace QApr {
 
-/**
- * @brief The InterfaceDatabase class
- *
- * camada criada para implementacao da parte de banco de dados
- */
+//!
+//! \brief The InterfaceDatabase class
+//!camada criada para implementacao da parte de banco de dados
 class Q_APR_EXPORT InterfaceDatabase : public QApr::InterfaceBase
 {
     Q_OBJECT
     Q_DECLARE_OBJECT()
-    QORM_CONNECTION_SUPPORT
 public:
-    /**
-     * @brief InterfaceDatabase
-     * @param parent
-     */
+    //!
+    //! \brief InterfaceDatabase
+    //! \param parent
+    //!
     Q_INVOKABLE explicit InterfaceDatabase(QObject *parent = nullptr);
 
-    /**
-     * @brief ~InterfaceDatabase
-     */
+    //!
+    //! \brief ~InterfaceDatabase
+    //!
     Q_INVOKABLE ~InterfaceDatabase();
 
-    /**
-     * @brief requestBeforeInvoke
-     * @return
-     */
-    virtual bool requestBeforeInvoke();
+    //!
+    //! \brief requestBeforeInvoke
+    //! \return
+    //!
+    virtual bool requestBeforeInvoke()override;
 
-    /**
-     * @brief requestAfterInvoke
-     * @return
-     */
-    virtual bool requestAfterInvoke();
+    //!
+    //! \brief requestAfterInvoke
+    //! \return
+    //!
+    virtual bool requestAfterInvoke()override;
 
-    /**
-     * @brief connectionDb
-     * @return
-     */
-    virtual bool connectionDb() const;
+    //!
+    //! \brief connectionDb
+    //! \return
+    //!
+    virtual bool connectionDb() const ;
+
+    //!
+    //! \brief setConnectionDb
+    //! \param value
+    //!
     virtual void setConnectionDb(bool value);
 
-    /**
-     * @brief transactionRollbackForce
-     * @return
-     *
-     * se true mesmo com tudo correto ocorrerá o rollback da transacao
-     */
+    //!
+    //! \brief transactionRollbackForce
+    //! \return
+    //!se true mesmo com tudo correto ocorrerá o rollback da transacao
     virtual bool transactionRollbackForce() const;
+
+    //!
+    //! \brief setTransactionRollbackForce
+    //! \param value
+    //!
     virtual void setTransactionRollbackForce(bool value);
 
 private:
     void *p = nullptr;
 };
 
-} // namespace QApr
+}

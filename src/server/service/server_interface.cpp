@@ -69,7 +69,7 @@ bool ServerInterface::authorization()
     auto vModel=__publishers.value(service_uuid.toString());
     auto uuid=QUuid(service_uuid);
     if(!vModel.isValid()){
-        service_uuid=this->rq().authorizationBearer();
+        service_uuid=QUuid::fromString(this->rq().authorizationBearer());
         uuid=QUuid(service_uuid);
         vModel=__publishers.value(uuid.toString());
     }

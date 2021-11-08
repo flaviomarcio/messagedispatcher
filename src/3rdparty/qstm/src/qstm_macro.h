@@ -160,7 +160,11 @@ while (i.hasNext())
 
 #define Q_V_HASH_ITERATOR(v)\
 QHashIterator<QString, QVariant> i(v);\
-while (i.hasNext())
+    while (i.hasNext())
+
+#define Q_V_MULTI_HASH_ITERATOR(v)\
+QMultiHashIterator<QString, QVariant> i(v);\
+    while (i.hasNext())
 
 #define Q_V_PROPERTY_ITERATOR(v)\
 QHashIterator<QString, QMetaProperty> i(v);\

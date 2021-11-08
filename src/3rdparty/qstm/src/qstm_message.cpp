@@ -6,7 +6,7 @@
 namespace QStm {
 
 #define dPvt()\
-    auto&p =*reinterpret_cast<MessagePvt*>(this->p)
+auto&p =*reinterpret_cast<MessagePvt*>(this->p)
 
 class MessagePvt{
 public:
@@ -39,7 +39,7 @@ public:
     static QVariant staticReplaceVar(const QVariantHash&static_variables, const QVariant&v){
         VariantUtil vu;
         QString value;
-        if(v.type()==v.Map || v.type()==v.Hash || v.type()==v.List || v.type()==v.StringList){
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
             value=QJsonDocument::fromVariant(v).toJson(QJsonDocument::Compact);
         }
         else{
@@ -67,7 +67,7 @@ public:
             }
         }
 
-        if(v.type()==v.Map || v.type()==v.Hash || v.type()==v.List || v.type()==v.StringList){
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
             auto v=QJsonDocument::fromJson(value.toUtf8()).toVariant();
             return v;
         }
@@ -316,13 +316,13 @@ Message &Message::setAttachmentName(const QVariant &value)
     return*this;
 }
 
-QString Message::type() const
+QString Message::typeId() const
 {
     dPvt();
     return p.parserVariable(p.type).toString();
 }
 
-Message &Message::type(const QVariant &value)
+Message &Message::typeId(const QVariant &value)
 {
     dPvt();
     p.type = value.toString();

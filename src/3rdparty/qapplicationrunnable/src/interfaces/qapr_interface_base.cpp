@@ -50,19 +50,19 @@ QVariant InterfaceBase::ping()
 QVariant InterfaceBase::fullCheck()
 {
     this->rq().co().setOK();
-    return QVariant();
+    return {};
 }
 
 QVariant InterfaceBase::connectionsCheck()
 {
     this->rq().co().setOK();
-    return QVariant();
+    return {};
 }
 
 QVariant InterfaceBase::businessCheck()
 {
     this->rq().co().setNotImplemented();
-    return QVariant();
+    return {};
 }
 
 }

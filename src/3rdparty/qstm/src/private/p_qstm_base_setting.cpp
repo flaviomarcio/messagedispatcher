@@ -53,7 +53,9 @@ static QVariantHash &make_static_variables()
     dir.insert(qsl("$PicturesLocation"     ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::PicturesLocation     ) );
     dir.insert(qsl("$TempLocation"         ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::TempLocation         ) );
     dir.insert(qsl("$HomeLocation"         ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::HomeLocation         ) );
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     dir.insert(qsl("$DataLocation"         ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::DataLocation         ) );
+#endif
     dir.insert(qsl("$CacheLocation"        ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::CacheLocation        ) );
     dir.insert(qsl("$GenericDataLocation"  ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation  ) );
     dir.insert(qsl("$RuntimeLocation"      ).trimmed(), QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation      ) );
@@ -92,7 +94,7 @@ public:
 
     static QVariant staticReplaceString(const QVariantHash&static_variables, const QVariant&v){
         QString value;
-        if(v.type()==v.Map || v.type()==v.Hash || v.type()==v.List || v.type()==v.StringList){
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
             value=QJsonDocument::fromVariant(v).toJson(QJsonDocument::Compact);
         }
         else{
@@ -114,7 +116,7 @@ public:
             }
         }
 
-        if(v.type()==v.Map || v.type()==v.Hash || v.type()==v.List || v.type()==v.StringList){
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
             auto v=QJsonDocument::fromJson(value.toUtf8()).toVariant();
             return v;
         }
@@ -149,7 +151,7 @@ public:
     static const QVariant getNumber(const QVariant&v){
         auto num=qsl("0123456789,.");
         QString r,ss;
-        if(v.type()==v.Double)
+        if(v.typeId()==QMetaType::Double)
             ss=QString::number(v.toDouble(),'f',11);
         else if(v.toLongLong()>0)
             ss=QString::number(v.toLongLong(),'f',0);
@@ -171,40 +173,40 @@ public:
     QVariant getMemoryBytes(const QVariant&v, const QVariant&defaultV=QVariant()){
         if(v.isNull() || !v.isValid() || v.toLongLong()<0)
             return defaultV;
-        else if(v.type()==v.LongLong || v.type()==v.ULongLong || v.type()==v.Int || v.type()==v.UInt || v.type()==v.Double)
+
+        if(v.typeId()==QMetaType::LongLong || v.typeId()==QMetaType::ULongLong || v.typeId()==QMetaType::Int || v.typeId()==QMetaType::UInt || v.typeId()==QMetaType::Double)
             return v;
-        else{
-            qlonglong scale=1;
-            static qlonglong KB=1024;
-            static qlonglong K=1024;
 
-            auto a=getAlpha(v).toString().toLower();
-            if(a==qsl("kb"))
-                scale=1;
-            else if(a==qsl("mb"))
-                scale=2;
-            else if(a==qsl("gb"))
-                scale=3;
-            else if(a==qsl("tb"))
-                scale=4;
-            else if(a==qsl("pb"))
-                scale=5;
-            else if(a==qsl("eb"))
-                scale=6;
-            else if(a==qsl("zb"))
-                scale=7;
-            else if(a==qsl("yb"))
-                scale=8;
-            else
-                scale=1;//ms
+        qlonglong scale=1;
+        static qlonglong KB=1024;
+        static qlonglong K=1024;
 
-            auto iN=getNumber(v);
-            auto i=iN.toLongLong();
-            i*=KB*pow(K, scale);
-            if(i<=0)
-                i=getMemoryBytes(defaultV).toLongLong();
-            return i;
-        }
+        auto a=getAlpha(v).toString().toLower();
+        if(a==qsl("kb"))
+            scale=1;
+        else if(a==qsl("mb"))
+            scale=2;
+        else if(a==qsl("gb"))
+            scale=3;
+        else if(a==qsl("tb"))
+            scale=4;
+        else if(a==qsl("pb"))
+            scale=5;
+        else if(a==qsl("eb"))
+            scale=6;
+        else if(a==qsl("zb"))
+            scale=7;
+        else if(a==qsl("yb"))
+            scale=8;
+        else
+            scale=1;//ms
+
+        auto iN=getNumber(v);
+        auto i=iN.toLongLong();
+        i*=KB*pow(K, scale);
+        if(i<=0)
+            i=getMemoryBytes(defaultV).toLongLong();
+        return i;
         return 0;
     }
 
@@ -304,10 +306,11 @@ bool BaseSetting::macth(const QString &name)
     }
     if(startWith && name.startsWith(i_name))
         return true;
-    else if((name==i_name))
+
+    if((name==i_name))
         return true;
-    else
-        return false;
+
+    return false;
 }
 
 void BaseSetting::clear()
@@ -317,30 +320,30 @@ void BaseSetting::clear()
         if(QByteArray(property.name())==QT_STRINGIFY2(objectName))
             continue;
         else{
-            auto type=property.type();
-            if((type==QVariant::Int) || (type==QVariant::UInt) || (type==QVariant::LongLong) || (type==QVariant::ULongLong) || (type==QVariant::Double))
+            auto type=property.typeId();
+            if((type==QMetaType::Int) || (type==QMetaType::UInt) || (type==QMetaType::LongLong) || (type==QMetaType::ULongLong) || (type==QMetaType::Double))
                 property.write(this,0);
-            else if(type==QVariant::Date)
+            else if(type==QMetaType::QDate)
                 property.write(this,QDate());
-            else if(type==QVariant::Time)
+            else if(type==QMetaType::QTime)
                 property.write(this,QTime());
-            else if(type==QVariant::DateTime)
+            else if(type==QMetaType::QDateTime)
                 property.write(this,QDateTime());
-            else if(type==QVariant::Hash)
+            else if(type==QMetaType::QVariantHash)
                 property.write(this,QVariantHash());
-            else if(type==QVariant::Map)
+            else if(type==QMetaType::QVariantMap)
                 property.write(this,QVariant());
-            else if(type==QVariant::List)
+            else if(type==QMetaType::QVariantList)
                 property.write(this,QVariantList());
-            else if(type==QVariant::StringList)
+            else if(type==QMetaType::QStringList)
                 property.write(this,QStringList());
-            else if(type==QVariant::String || type==QVariant::ByteArray || type==QVariant::Char || type==QVariant::BitArray)
+            else if(type==QMetaType::QString || type==QMetaType::QByteArray || type==QMetaType::QChar || type==QMetaType::QBitArray)
                 property.write(this,qbl_null);
-            else if(type==QVariant::LongLong || type==QVariant::ULongLong || type==QVariant::Int || type==QVariant::UInt || type==QVariant::Double)
+            else if(type==QMetaType::LongLong || type==QMetaType::ULongLong || type==QMetaType::Int || type==QMetaType::UInt || type==QMetaType::Double)
                 property.write(this,0);
-            else if(type==QVariant::StringList)
+            else if(type==QMetaType::QStringList)
                 property.write(this,QStringList());
-            else if(type==QVariant::StringList)
+            else if(type==QMetaType::QStringList)
                 property.write(this,QStringList());
             else
                 property.write(this,QVariant());
@@ -353,22 +356,23 @@ bool BaseSetting::isValid()const
     for (int row = 0; row < this->metaObject()->propertyCount(); ++row) {
         auto property=this->metaObject()->property(row);
         if(QByteArray(property.name())==QT_STRINGIFY2(objectName))
-            continue;
-        else{
-            auto vGet = property.read(this);
-            if(vGet.isValid()){
-                auto t=vGet.type();
-                if((t==vGet.String || t==vGet.ByteArray || t==vGet.Char) && vGet.toString().trimmed().isEmpty())
-                    continue;
-                else if((t==vGet.Double || t==vGet.Int || t==vGet.UInt || t==vGet.LongLong || t==vGet.ULongLong) && vGet.toLongLong()>0)
-                    continue;
-                else if((t==vGet.Map || t==vGet.Hash) && vGet.toHash().isEmpty())
-                    continue;
-                else if((t==vGet.List || t==vGet.StringList) && vGet.toList().isEmpty())
-                    continue;
-                else
-                    return true;
-            }
+            continue;        
+        auto vGet = property.read(this);
+        if(vGet.isValid()){
+            auto t=vGet.typeId();
+            if((t==QMetaType::QString || t==QMetaType::QByteArray || t==QMetaType::QChar) && vGet.toString().trimmed().isEmpty())
+                continue;
+
+            if((t==QMetaType::Double || t==QMetaType::Int || t==QMetaType::UInt || t==QMetaType::LongLong || t==QMetaType::ULongLong) && vGet.toLongLong()>0)
+                continue;
+
+            if((t==QMetaType::QVariantMap || t==QMetaType::QVariantHash) && vGet.toHash().isEmpty())
+                continue;
+
+            if((t==QMetaType::QVariantList || t==QMetaType::QStringList) && vGet.toList().isEmpty())
+                continue;
+
+            return true;
         }
     }
     return false;
@@ -378,42 +382,38 @@ QVariantMap BaseSetting::toMap()const
 {
     if(!this->isValid())
         return QVariantMap();
-    else{
-        QVariantMap RETURN;
-        for (int row = 0; row < this->metaObject()->propertyCount(); ++row) {
-            auto property=this->metaObject()->property(row);
-            if(QByteArray(property.name())==QT_STRINGIFY2(objectName))
-                continue;
-            else{
-                const auto key=property.name();
-                const auto value = property.read(this);
-                if(!value.isNull())
-                    RETURN.insert(key, value);
-            }
-        }
-        return RETURN;
+    QVariantMap RETURN;
+    for (int row = 0; row < this->metaObject()->propertyCount(); ++row) {
+        auto property=this->metaObject()->property(row);
+        if(QByteArray(property.name())==QT_STRINGIFY2(objectName))
+            continue;
+
+        const auto key=property.name();
+        const auto value = property.read(this);
+        if(!value.isNull())
+            RETURN.insert(key, value);
     }
+    return RETURN;
 }
 
 QVariantHash BaseSetting::toHash() const
 {
     if(!this->isValid())
-        return QVariantHash();
-    else{
-        QVariantHash RETURN;
-        for (int row = 0; row < this->metaObject()->propertyCount(); ++row) {
-            auto property=this->metaObject()->property(row);
-            if(QByteArray(property.name())==QT_STRINGIFY2(objectName))
-                continue;
-            else{
-                const auto key=property.name();
-                const auto value = property.read(this);
-                if(!value.isNull())
-                    RETURN.insert(key, value);
-            }
+        return {};
+
+    QVariantHash RETURN;
+    for (int row = 0; row < this->metaObject()->propertyCount(); ++row) {
+        auto property=this->metaObject()->property(row);
+        if(QByteArray(property.name())==QT_STRINGIFY2(objectName))
+            continue;
+        else{
+            const auto key=property.name();
+            const auto value = property.read(this);
+            if(!value.isNull())
+                RETURN.insert(key, value);
         }
-        return RETURN;
     }
+    return RETURN;
 }
 
 bool BaseSetting::fromSetting(const BaseSetting &v)
@@ -446,24 +446,24 @@ bool BaseSetting::fromHash(const QVariantHash &v)
         else{
             auto key = QString(property.name()).toLower();
             auto value = vMap.value(key);
-            auto type=property.type();
+            auto type=property.typeId();
             if(value.isNull() || !value.isValid())
                 continue;
             else if(property.write(this,value))
                 continue;
-            else if(type==QVariant::Int || type==QVariant::UInt)
+            else if(type==QMetaType::Int || type==QMetaType::UInt)
                 property.write(this,value.toInt());
-            else if(type==QVariant::LongLong || type==QVariant::ULongLong)
+            else if(type==QMetaType::LongLong || type==QMetaType::ULongLong)
                 property.write(this,value.toLongLong());
-            else if(type==QVariant::Double)
+            else if(type==QMetaType::Double)
                 property.write(this,value.toDouble());
-            else if(type==QVariant::Hash)
+            else if(type==QMetaType::QVariantHash)
                 property.write(this, vu.toHash(value));
-            else if(type==QVariant::Map)
+            else if(type==QMetaType::QVariantMap)
                 property.write(this, vu.toMap());
-            else if(type==QVariant::List)
+            else if(type==QMetaType::QVariantList)
                 property.write(this, vu.toList());
-            else if(type==QVariant::StringList)
+            else if(type==QMetaType::QStringList)
                 property.write(this, vu.toStringList());
             else
                 __return=false;
@@ -483,10 +483,10 @@ bool BaseSetting::fromVariant(const QVariant&v)
     bool __return=true;
     VariantUtil vu;
     auto vv=vu.toVariantObject(v);
-    if((vv.type()==vv.Hash) || (vv.type()==vv.Map)){
+    if((vv.typeId()==QMetaType::QVariantHash) || (vv.typeId()==QMetaType::QVariantMap)){
         __return=this->fromHash(vv.toHash());
     }
-    else if((vv.type()==vv.List)){
+    else if((vv.typeId()==QMetaType::QVariantList)){
         for(auto&h:vv.toList())
             if(!this->fromHash(h.toHash()))
                 __return=false;
@@ -517,23 +517,23 @@ bool BaseSetting::mergeHash(const QVariantHash &v)
         else{
             auto key = QString(property.name()).toLower();
             auto value = vMap.value(key);
-            auto type=property.type();
+            auto type=property.typeId();
             if(value.isNull() || !value.isValid())
                 continue;
             else if(!property.write(this,value)){
-                if(type==QVariant::Int || type==QVariant::UInt)
+                if(type==QMetaType::Int || type==QMetaType::UInt)
                     property.write(this,value.toInt());
-                else if(type==QVariant::LongLong || type==QVariant::ULongLong)
+                else if(type==QMetaType::LongLong || type==QMetaType::ULongLong)
                     property.write(this,value.toLongLong());
-                else if(type==QVariant::Double)
+                else if(type==QMetaType::Double)
                     property.write(this,value.toDouble());
-                else if(type==QVariant::Hash)
+                else if(type==QMetaType::QVariantHash)
                     property.write(this, vu.toHash(value));
-                else if(type==QVariant::Map)
+                else if(type==QMetaType::QVariantMap)
                     property.write(this, vu.toMap());
-                else if(type==QVariant::List)
+                else if(type==QMetaType::QVariantList)
                     property.write(this, vu.toList());
-                else if(type==QVariant::StringList)
+                else if(type==QMetaType::QStringList)
                     property.write(this, vu.toStringList());
             }
             __return=true;
@@ -552,10 +552,10 @@ bool BaseSetting::mergeVariant(const QVariant &v)
     bool __return=true;
     VariantUtil vu;
     auto vv=vu.toVariantObject(v);
-    if((vv.type()==vv.Hash) || (vv.type()==vv.Map)){
+    if((vv.typeId()==QMetaType::QVariantHash) || (vv.typeId()==QMetaType::QVariantMap)){
         __return=this->mergeHash(vv.toHash());
     }
-    else if((vv.type()==vv.List)){
+    else if((vv.typeId()==QMetaType::QVariantList)){
         for(auto&h:vv.toList())
             if(!this->mergeHash(h.toHash()))
                 __return=false;

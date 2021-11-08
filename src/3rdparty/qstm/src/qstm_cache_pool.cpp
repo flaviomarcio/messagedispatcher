@@ -33,7 +33,7 @@ public:
 
     QByteArray toMd5(const QVariant&value)const{
         QByteArray bytes;
-        if(value.type()==QVariant::Map || value.type()==QVariant::Hash || value.type()==QVariant::List)
+        if(value.typeId()==QMetaType::QVariantMap || value.typeId()==QMetaType::QVariantHash || value.typeId()==QMetaType::QVariantList)
             bytes = QJsonDocument::fromVariant(value).toJson(QJsonDocument::Compact);
         else
             bytes = value.toByteArray();
@@ -41,7 +41,7 @@ public:
     }
 
     void clear(){
-        QMutexLocker locker(&cacheMutex);
+        QMutexLocker<QMutex> locker(&cacheMutex);
         this->cache.clear();
     }
 };
@@ -71,7 +71,7 @@ CachePool &CachePool::instance()
 CachePool &CachePool::instance(QThread*currentThread)
 {
     static QMutex instanceMutex;
-    QMutexLocker locker(&instanceMutex);//enfileira e apenas 1 vai entrar
+    QMutexLocker<QMutex> locker(&instanceMutex);//enfileira e apenas 1 vai entrar
     auto&i=instancesMap[currentThread];
     if(i==nullptr){
         i=new CachePool();
@@ -96,18 +96,18 @@ QVariant CachePool::get(const QVariant &key) const
 {
     if(key.isValid()){
         dPvt();
-        QMutexLocker locker(&p.cacheMutex);
+        QMutexLocker<QMutex> locker(&p.cacheMutex);
         auto hshMd5 = p.toMd5(key);
         return p.cache.value(hshMd5).second;
     }
-    return QVariant();
+    return {};
 }
 
 QByteArray CachePool::set(QVariant &value) const
 {
     if(value.isValid()){
         dPvt();
-        QMutexLocker locker(&p.cacheMutex);
+        QMutexLocker<QMutex> locker(&p.cacheMutex);
         auto hshMd5 = p.toMd5(value);
         if(this->set(hshMd5, value))
             return hshMd5;
@@ -120,7 +120,7 @@ bool CachePool::set(const QVariant &key, const QVariant &value) const
     if(key.isValid() || value.isValid()){
         dPvt();
         auto hshMd5 = p.toMd5(key);
-        QMutexLocker locker(&p.cacheMutex);
+        QMutexLocker<QMutex> locker(&p.cacheMutex);
         auto pair=CacheItem(QDateTime::currentDateTime(), value);
         p.cache.insert(hshMd5, pair);
         return true;
@@ -132,24 +132,24 @@ QVariant CachePool::take(const QVariant &key) const
 {
     if(key.isValid()){
         dPvt();
-        QMutexLocker locker(&p.cacheMutex);
+        QMutexLocker<QMutex> locker(&p.cacheMutex);
         auto hshMd5 = p.toMd5(key);
         if(p.cache.contains(hshMd5))
             return p.cache.take(hshMd5).second;
     }
-    return QVariant();
+    return {};
 }
 
 QVariant CachePool::remove(const QVariant &key) const
 {
     if(key.isValid()){
         dPvt();
-        QMutexLocker locker(&p.cacheMutex);
+        QMutexLocker<QMutex> locker(&p.cacheMutex);
         auto hshMd5 = p.toMd5(key);
         if(p.cache.contains(hshMd5))
             return p.cache.take(hshMd5).second;
     }
-    return QVariant();
+    return {};
 }
 
 }

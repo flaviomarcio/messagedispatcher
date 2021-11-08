@@ -23,7 +23,7 @@ QVariant InterfaceDispatcher::send()
         this->request().co().setBadRequest();
     else{
         emit instance.dispacher(body[qsl("uuid")].toUuid(), body);
-        return QVariant();
+        return {};
     }
     QRPC_RETURN_ERROR();
 }

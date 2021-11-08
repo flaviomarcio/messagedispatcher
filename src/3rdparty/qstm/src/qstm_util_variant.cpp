@@ -41,11 +41,11 @@ public:
     QVariantHash toHash(const QVariant &v)const
     {
         QVariantHash map;
-        if(v.type()==QVariant::Map || v.type()==QVariant::Hash)
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash)
             map=v.toHash();
         else if(v.isNull() || !v.isValid() || v.toString().trimmed().isEmpty())
             map.clear();
-        else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+        else if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
             QJsonParseError*error=nullptr;
             auto doc=QJsonDocument::fromJson(v.toByteArray(),error);
             if(error!=nullptr){
@@ -63,11 +63,11 @@ public:
     QVariantMap toMap(const QVariant &v)const
     {
         QVariantMap map;
-        if(v.type()==QVariant::Map || v.type()==QVariant::Hash)
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash)
             map=v.toMap();
         else if(v.isNull() || !v.isValid() || v.toString().trimmed().isEmpty())
             map.clear();
-        else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+        else if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
             QJsonParseError*error=nullptr;
             auto doc=QJsonDocument::fromJson(v.toByteArray(),error);
             if(error!=nullptr){
@@ -85,10 +85,11 @@ public:
     static QByteArray toMd5(const QVariant &v)
     {
         //if(v.isValid()) vBase->setValue(v);
-        auto vType=v.type();
+        auto vType=v.typeId();
         if(!v.isValid())
             return qbl_null;
-        else if(vType==v.Uuid){
+
+        if(vType==QMetaType::QUuid){
             auto uuid=v.toUuid();
             auto suuid=uuid.toByteArray();
             auto md5=suuid.replace(qbl("{"),qbl_null).replace(qbl("}"),qbl_null).replace(qbl("-"), qbl_null);
@@ -97,12 +98,13 @@ public:
             else
                 return QCryptographicHash::hash(suuid, QCryptographicHash::Md5).toHex();
         }
-        else {
+
+        {
             auto bytes=v.toByteArray().trimmed();
             if(bytes.isEmpty())
                 return qbl_null;
             //se ja for md5 ou uuid manteremos o uuid como md5 logo ja e um
-            else if((vType==v.ByteArray || vType==v.String)){
+            else if((vType==QMetaType::QByteArray || vType==QMetaType::QString)){
                 auto md5=bytes.replace(qbl("{"),qbl_null).replace(qbl("}"),qbl_null).replace(qbl("-"),qbl_null);
                 if(md5.length()==32)
                     return md5;
@@ -113,13 +115,14 @@ public:
 
     static QByteArray toByteArray(const QVariant &v)
     {
-        auto vType=v.type();
-        if(vType==QVariant::List || vType==QVariant::StringList || vType==QVariant::Map || vType==QVariant::Hash)
+        auto vType=v.typeId();
+        if(vType==QMetaType::QVariantList || vType==QMetaType::QStringList || vType==QMetaType::QVariantMap || vType==QMetaType::QVariantHash)
             return QJsonDocument::fromVariant(v).toJson(QJsonDocument::Compact);
-        else if(vType==QVariant::Uuid)
+
+        if(vType==QMetaType::QUuid)
             return v.toUuid().toByteArray();
-        else
-            return v.toByteArray();
+
+        return v.toByteArray();
     }
 
     static bool canConvertJson(const QVariant &v, QVariant &vOut)
@@ -128,14 +131,17 @@ public:
         if(v.isNull() || !v.isValid()){
             return false;
         }
-        else if(v.type()==QVariant::Map || v.type()==QVariant::Hash || v.type()==QVariant::List || v.type()==QVariant::StringList){
+
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
             vOut=v;
             return true;
         }
-        else if(!(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray)){
+
+        if(!(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray)){
             return false;
         }
-        else{
+
+        {
             QJsonParseError*error=nullptr;
             auto doc=QJsonDocument::fromJson(v.toByteArray(),error);
             if(error!=nullptr)
@@ -171,36 +177,40 @@ public:
         auto smd5=md5;
         if(md5ParserUuid(smd5, smd5))
             return QUuid::fromString(qsl("{")+smd5+qsl("}"));
-        else
-            return QUuid();
+
+        return QUuid();
     }
 
     QVariant vUnion(const QVariant &v){
-        auto t=v.type();
+        auto t=v.typeId();
         if(!v.isValid())
-            return QVariant();
-        else if(t==QVariant::List || t==QVariant::StringList){
+            return {};
+
+        if(t==QMetaType::QVariantList || t==QMetaType::QStringList){
             auto vList=v.toList();
             QVariant vA;
             while(!vList.isEmpty()){
                 auto vB=vList.takeFirst();
-                if(vB.type()==vA.type()){
+                if(vB.typeId()==vA.typeId()){
                     vA=vUnion(vA,vB);
                 }
             }
             return vA;
         }
-        return QVariant();
+
+        return {};
     }
 
     QVariant vUnion(const QVariant &vDestine, const QVariant &vSource)
     {
-        auto t=vDestine.type();
-        if(vDestine.type()!=vSource.type())
-            return QVariant();
-        else if(t==QVariant::List || t==QVariant::StringList)
+        auto t=vDestine.typeId();
+        if(vDestine.typeId()!=vSource.typeId())
+            return {};
+
+        if(t==QMetaType::QVariantList || t==QMetaType::QStringList)
             return (vDestine.toList()+vSource.toList());
-        else if(t==QVariant::Map || t==QVariant::Hash){
+
+        if(t==QMetaType::QVariantMap || t==QMetaType::QVariantHash){
             auto aMap=vDestine.toHash();
             auto bMap=vSource.toHash();
             QHashIterator<QString, QVariant> i(bMap);
@@ -213,30 +223,29 @@ public:
             }
             return aMap;
         }
-        else{
+
+        {
             QByteArray rByte;
-            auto ls=QVariantList()<<vDestine<<vSource;
+            auto ls=QVariantList{vDestine, vSource};
             for(auto&v:ls){
                 rByte.append(v.toByteArray());
             }
             return rByte;
         }
-        return QVariant();
     }
 
     QVariant vMerge(const QVariant &v){
         QVariant vOut;
         if(this->canConvertJson(v,vOut)){
-            auto t=vOut.type();
+            auto t=vOut.typeId();
             if(!vOut.isValid())
-                return QVariant();
-            else if(t==QVariant::List || t==QVariant::StringList){
+                return {};
+            if(t==QMetaType::QVariantList || t==QMetaType::QStringList){
                 auto vList=vOut.toList();
                 if(!vList.isEmpty()){
-                    auto vA=QVariant(vList.first().type());
-                    while(!vList.isEmpty()){
-                        auto vB=vList.takeFirst();
-                        if(vB.type()==vA.type()){
+                    auto vA=QVariant(vList.takeFirst());
+                    for(const auto&vB:vList){
+                        if(vB.typeId()==vA.typeId()){
                             vA=vMerge(vA,vB);
                         }
                     }
@@ -244,7 +253,7 @@ public:
                 }
             }
         }
-        return QVariant();
+        return {};
     }
 
     static QVariant vMerge(const QVariant&vDestineIn, const QVariant&vSourceIn){
@@ -256,18 +265,18 @@ public:
         if(!canConvertJson(vSourceIn, vSource))
             vSource=vSourceIn;
 
-        auto t=vDestine.type();
-        if(vDestine.type()!=vSource.type()){
-            return QVariant();
+        auto t=vDestine.typeId();
+        if(vDestine.typeId()!=vSource.typeId()){
+            return {};
         }
-        else if(t==QVariant::List || t==QVariant::StringList){
+        else if(t==QMetaType::QVariantList || t==QMetaType::QStringList){
             auto dst=vDestine.toList();
             auto src=vSource.toList();
             QStringList keyList;
             QVariantList lst;
             for(const auto&v:dst){//cache de chaves existentes
                 if(v.isValid()){
-                    if( v.type()==v.List || v.type()==v.StringList || v.type()==v.Map || v.type()==v.Hash )
+                    if( v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList || v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash )
                         keyList<<toMd5(v);
                     else
                         keyList<<toByteArray(v);
@@ -276,7 +285,7 @@ public:
             for(auto&v:src){
                 if(v.isValid()){
                     QByteArray key;
-                    if( v.type()==v.List || v.type()==v.StringList || v.type()==v.Map || v.type()==v.Hash )
+                    if( v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList || v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash )
                         key=toMd5(v);
                     else
                         key=toByteArray(v);
@@ -288,7 +297,7 @@ public:
             }
             return lst;
         }
-        else if(t==QVariant::Map || t==QVariant::Hash){
+        else if(t==QMetaType::QVariantMap || t==QMetaType::QVariantHash){
             auto aMap=vDestine.toHash();
             auto bMap=vSource.toHash();
             QHashIterator<QString, QVariant> i(bMap);
@@ -309,18 +318,18 @@ public:
         }
         else{
             QByteArray rByte;
-            auto ls=QVariantList()<<vDestine<<vSource;
+            auto ls=QVariantList{vDestine, vSource};
             for(auto&v:ls){
                 rByte.append(v.toByteArray());
             }
             return rByte;
         }
-        return QVariant();
+        return {};
     }
 
     QVariant vDeduplicate(const QVariant&v){
         QVariant vRet;
-        if(v.type()==QVariant::Map || v.type()==QVariant::Hash){
+        if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash){
             auto vMap=v.toHash();
             auto vAdd=QVariantHash();
             QHashIterator<QString, QVariant> i(vMap);
@@ -333,7 +342,7 @@ public:
             }
             vRet=vAdd;
         }
-        else if(v.type()==QVariant::List){
+        else if(v.typeId()==QMetaType::QVariantList){
             auto vMap=v.toList();
             auto vAdd=QVariantHash();
             for(auto&v:vMap){
@@ -389,26 +398,28 @@ const QString VariantUtil::toStr(const QVariant &v)
 {
     dPvt();
     set__value(v);
-    auto vType=QVariant::type();
-    if(vType==QVariant::List || vType==QVariant::StringList || vType==QVariant::Map || vType==QVariant::Hash)
+    auto vType=int();
+    if(vType==QMetaType::QVariantList || vType==QMetaType::QStringList || vType==QMetaType::QVariantMap || vType==QMetaType::QVariantHash)
         return QJsonDocument::fromVariant(*this).toJson(QJsonDocument::Compact);
-    else if(vType==QVariant::Uuid)
+
+    if(vType==QMetaType::QUuid)
         return QVariant::toUuid().toString();
-    else
-        return QVariant::toString();
+
+    return QVariant::toString();
 }
 
 const QByteArray VariantUtil::toByteArray(const QVariant &v)
 {
     dPvt();
     set__value(v);
-    auto vType=this->type();
-    if(vType==QVariant::List || vType==QVariant::StringList || vType==QVariant::Map || vType==QVariant::Hash)
+    auto vType=this->typeId();
+    if(vType==QMetaType::QVariantList || vType==QMetaType::QStringList || vType==QMetaType::QVariantMap || vType==QMetaType::QVariantHash)
         return QJsonDocument::fromVariant(*this).toJson(QJsonDocument::Compact);
-    else if(vType==QVariant::Uuid)
+
+    if(vType==QMetaType::QUuid)
         return QVariant::toUuid().toByteArray();
-    else
-        return QVariant::toByteArray();
+
+    return QVariant::toByteArray();
 }
 
 const QChar VariantUtil::toChar(const QVariant &v)
@@ -467,7 +478,7 @@ bool VariantUtil::toBool(const QVariant &v)
     const static auto listBool=QVector<QByteArray>()<<qbl("1")<<qbl("true")<<qbl("yes")<<qbl("sim")<<qbl("verdadeiro")<<qbl("t")<<qbl("s")<<qbl("v")<<qbl("y");
     dPvt();
     set__value(v);
-    if(QVariant::type()==QVariant::Bool)
+    if(QVariant::typeId()==QMetaType::Bool)
         return QVariant::toBool();
     else if(listBool.contains(QVariant::toByteArray().toLower().trimmed()))
         return true;
@@ -494,7 +505,8 @@ const QByteArray VariantUtil::toMd5(const QVariant &v)
     set__value(v);
     if(!this->isValid())
         return qbl_null;
-    else if(this->type()==v.Uuid){
+
+    if(this->typeId()==QMetaType::QUuid){
         auto uuid=QVariant::toUuid();
         auto suuid=uuid.toByteArray();
         auto md5=suuid.replace(qbl("{"), qbl_null).replace(qbl("}"), qbl_null).replace(qbl("-"), qbl_null);
@@ -503,12 +515,13 @@ const QByteArray VariantUtil::toMd5(const QVariant &v)
         else
             return QCryptographicHash::hash(suuid, QCryptographicHash::Md5).toHex();
     }
-    else {
+
+    {
         auto bytes=this->toByteArray().trimmed();
         if(bytes.isEmpty())
             return qbl_null;
         //se ja for md5 ou uuid manteremos o uuid como md5 logo ja e um
-        else if((this->type()==v.ByteArray || this->type()==v.String)){
+        else if((this->typeId()==QMetaType::QByteArray || this->typeId()==QMetaType::QString)){
             auto md5=bytes.replace(qbl("{"), qbl_null).replace(qbl("}"), qbl_null).replace(qbl("-"), qbl_null);
             if(md5.length()==32)
                 return md5;
@@ -528,12 +541,9 @@ const QUuid VariantUtil::toUuid(const QVariant &v)
 {
     dPvt();
     set__value(v);
-    if(QVariant::type()==v.Uuid)
+    if(int()==QMetaType::QUuid)
         return QVariant::toUuid();
-    else if(this->canConvert(v.String))
-        return p.md5toUuid(this->toStr(v));
-    else
-        return QUuid();
+    return p.md5toUuid(this->toStr(v));
 }
 
 const QUuid VariantUtil::toMd5Uuid(const QVariant &v)
@@ -575,12 +585,12 @@ const QVariantList VariantUtil::takeList(const QByteArray &keyName)
 {
     QVariantList la;
     QVariantList lb;
-    if(this->type()==QVariant::List)
+    if(this->typeId()==QMetaType::QVariantList)
         la=this->toList();
     else
         la<<this->toHash();
     for(auto&v:la){
-        if((v.type()==QVariant::Map) || (v.type()==QVariant::Hash)){
+        if((v.typeId()==QMetaType::QVariantMap) || (v.typeId()==QMetaType::QVariantHash)){
             auto vm=v.toHash();
             auto vv=vm.value(keyName);
             if(vv.isValid()){
@@ -591,13 +601,13 @@ const QVariantList VariantUtil::takeList(const QByteArray &keyName)
     return lb;
 }
 
-QVariant::Type VariantUtil::type() const
+int VariantUtil::typeId() const
 {
     dPvt();
     if(!p.vvm.isEmpty())
-        return QVariant::Map;
+        return QMetaType::QVariantMap;
     else
-        return QVariant::type();
+        return int();
 }
 
 const QStringList VariantUtil::toStringList()
@@ -608,11 +618,11 @@ const QStringList VariantUtil::toStringList()
 const QStringList VariantUtil::toStringList(const QVariant &v)
 {
     QStringList map;
-    if(v.type()==QVariant::List || v.type()==QVariant::StringList)
+    if(v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList)
         map=v.toStringList();
     else if(v.isNull() || !v.isValid() || v.toString().trimmed().isEmpty())
         map.clear();
-    else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+    else if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
         QJsonParseError*error=nullptr;
         auto doc=QJsonDocument::fromJson(v.toByteArray(), error);
         if(error!=nullptr){
@@ -646,20 +656,19 @@ QVariantMap VariantUtil::toMap() const
         }
         return map;
     }
-    else{
-        auto v=p.toMap(*this);
-        return v;
-    }
+
+    auto v=p.toMap(*this);
+    return v;
 }
 
 QVariantMap VariantUtil::toMap(const QVariant &v)const
 {
     QVariantMap map;
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash)
+    if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash)
         map=v.toMap();
     else if(v.isNull() || !v.isValid() || v.toString().trimmed().isEmpty())
         map.clear();
-    else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+    else if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
         QJsonParseError*error=nullptr;
         auto doc=QJsonDocument::fromJson(v.toByteArray(),error);
         if(error!=nullptr){
@@ -694,21 +703,20 @@ QVariantHash VariantUtil::toHash()const
         }
         return map;
     }
-    else{
-        auto v=p.toHash(*this);
-        return v;
-    }
+
+    auto v=p.toHash(*this);
+    return v;
 }
 
 const QVariantHash VariantUtil::toHash(const QVariant &v)
 {
     QVariantHash map;
-    QVariant::Type vtype=v.type();
-    if(vtype==QVariant::Map || vtype==QVariant::Hash)
+    int vtype=v.typeId();
+    if(vtype==QMetaType::QVariantMap || vtype==QMetaType::QVariantHash)
         map=v.toHash();
     else if(v.isNull() || !v.isValid() || v.toString().trimmed().isEmpty())
         map.clear();
-    else if(vtype==QVariant::String || vtype==QVariant::ByteArray || vtype==QVariant::Char || vtype==QVariant::BitArray){
+    else if(vtype==QMetaType::QString || vtype==QMetaType::QByteArray || vtype==QMetaType::QChar || vtype==QMetaType::QBitArray){
         QJsonParseError*error=nullptr;
         auto doc=QJsonDocument::fromJson(v.toByteArray(),error);
         if(error!=nullptr){
@@ -731,119 +739,142 @@ const QVariantHash VariantUtil::toHash(const QVariant &key, const QVariant &valu
     return this->toHash();
 }
 
-const QVariant VariantUtil::toType(const Type &type, const QVariant &v)
+QMultiHash<QString, QVariant> VariantUtil::toMultiHash() const
+{
+    return QMultiHash<QString, QVariant>(this->toHash());
+}
+
+const QMultiHash<QString, QVariant> VariantUtil::toMultiHash(const QVariant &v)
+{
+    return QMultiHash<QString, QVariant>(this->toHash(v));
+}
+
+const QMultiHash<QString, QVariant> VariantUtil::toMultiHash(const QVariant &key, const QVariant &value)
+{
+    return QMultiHash<QString, QVariant>(this->toHash(key, value));
+}
+
+const QVariant VariantUtil::toType(int type, const QVariant &v)
 {
     dPvt();
     set__value(v);
-    if(type==QVariant::Uuid)
+    if(type==QMetaType::QUuid)
         return this->toUuid(v);
-    else if(type==QVariant::Url)
+
+    if(type==QMetaType::QUrl)
         return this->toUrl(v);
-    else if(type==QVariant::String || type==QVariant::ByteArray  || type==QVariant::BitArray || type==QVariant::Char)
+
+    if(type==QMetaType::QString || type==QMetaType::QByteArray  || type==QMetaType::QBitArray || type==QMetaType::QChar)
         return this->toStr(v);
-    else if(type==QVariant::Map || type==QVariant::Hash)
+
+    if(type==QMetaType::QVariantMap || type==QMetaType::QVariantHash)
         return this->toMap(v);
-    else if(type==QVariant::StringList)
+
+    if(type==QMetaType::QStringList)
         return this->toStringList(v);
-    else if(type==QVariant::List)
+
+    if(type==QMetaType::QVariantList)
         return this->toList(v);
-    else if(type==QVariant::Int || type==QVariant::UInt || type==QVariant::LongLong || type==QVariant::ULongLong || type==QVariant::Double)
+
+    if(type==QMetaType::Int || type==QMetaType::UInt || type==QMetaType::LongLong || type==QMetaType::ULongLong || type==QMetaType::Double)
         return this->toLongLong(v);
-    else if(type==QVariant::Date)
+
+    if(type==QMetaType::QDate)
         return this->toDate(v);
-    else if(type==QVariant::Time)
+
+    if(type==QMetaType::QTime)
         return this->toTime(v);
-    else if(type==QVariant::DateTime)
+
+    if(type==QMetaType::QDateTime)
         return this->toDateTime(v);
-    else if(type==QVariant::Bool)
+
+    if(type==QMetaType::Bool)
         return this->toBool(v);
-    else
-        return QVariant();
+
+    return {};
 }
 
 const QVariant VariantUtil::toVariant(const QVariant &v)
 {
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash || v.type()==QVariant::List || v.type()==QVariant::StringList){
+    if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
         return v;
     }
-    else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+
+    if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
         auto vv=this->toVariantJson(v);
         if(vv.isNull() || !vv.isValid())
             vv=this->toVariantCBor(v);
         return vv.isValid()?vv:vv;
     }
-    else{
-        return v;
-    }
+
+    return v;
 }
 
 const QVariant VariantUtil::toVariantObject(const QVariant &v)
 {
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash || v.type()==QVariant::List || v.type()==QVariant::StringList){
+    if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
         return v;
     }
-    else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+
+    if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
         auto vv=this->toVariantJson(v);
-        if(!(vv.type()==QVariant::Map || vv.type()==QVariant::Hash || vv.type()==QVariant::List || vv.type()==QVariant::StringList)){
+        if(!(vv.typeId()==QMetaType::QVariantMap || vv.typeId()==QMetaType::QVariantHash || vv.typeId()==QMetaType::QVariantList || vv.typeId()==QMetaType::QStringList)){
             vv=this->toVariantCBor(v);
-            if(!(vv.type()==QVariant::Map || vv.type()==QVariant::Hash || vv.type()==QVariant::List || vv.type()==QVariant::StringList)){
+            if(!(vv.typeId()==QMetaType::QVariantMap || vv.typeId()==QMetaType::QVariantHash || vv.typeId()==QMetaType::QVariantList || vv.typeId()==QMetaType::QStringList)){
                 vv=QVariant();
             }
         }
         return vv;
     }
-    else{
-        return QVariant();
-    }
+
+    return {};
 }
 
 const QVariant VariantUtil::toVariantJson(const QVariant &v)
 {
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash || v.type()==QVariant::List || v.type()==QVariant::StringList){
+    if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
         return v;
     }
-    else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+
+    if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
         auto vv=QJsonDocument::fromJson(v.toByteArray()).toVariant();
         if(vv.isNull() || !vv.isValid())
             vv=this->toVariantCBor(v);
         return vv.isValid()?vv:v;
     }
-    else{
-        return v;
-    }
+    return v;
 }
 
 const QVariant VariantUtil::toVariantCBor(const QVariant &v)
 {
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash || v.type()==QVariant::List || v.type()==QVariant::StringList){
+    if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList){
         return v;
     }
-    else if(v.type()==QVariant::String || v.type()==QVariant::ByteArray || v.type()==QVariant::Char || v.type()==QVariant::BitArray){
+
+    if(v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar || v.typeId()==QMetaType::QBitArray){
         auto vv=QCborValue::fromVariant(v).toVariant();
         if(vv.isNull() || !vv.isValid())
             vv=this->toVariantJson(v);
         return vv.isValid()?vv:v;
     }
-    else{
-        return v;
-    }
+
+    return v;
 }
 
 const QUrl VariantUtil::toUrl(const QVariant &v)
 {
     if(v.isValid()) QVariant::setValue(v);
-    if(v.type()==v.Url)
+    if(v.typeId()==QMetaType::QUrl)
         return v.toUrl();
-    else{
-        QUrl url;
-        auto surl=v.toString();
-        if(QFile::exists(surl))
-            url=QUrl::fromLocalFile(surl);
-        else
-            url=QUrl(surl);
-        QVariant::setValue(url);
-        return url;
-    }
+
+    QUrl url;
+    auto surl=v.toString();
+    if(QFile::exists(surl))
+        url=QUrl::fromLocalFile(surl);
+    else
+        url=QUrl(surl);
+    QVariant::setValue(url);
+    return url;
 }
 
 VariantUtil &VariantUtil::makeVVM(const QVariant &key, const QVariant &value)
@@ -955,27 +986,35 @@ bool VariantUtil::vIsEmpty(const QVariant &v)
 {
     auto vv=QVariant(v.isValid()?v:*this);
     bool invalid=vv.isValid() && !v.isNull();
-    if(invalid){
-        if(vv.type()==QVariant::Uuid)
-            invalid=vv.toUuid().isNull();
-        else if(vv.type()==QVariant::Url)
-            invalid=vv.toUrl().isEmpty();
-        else if(vv.type()==QVariant::String || vv.type()==QVariant::ByteArray  || vv.type()==QVariant::BitArray || vv.type()==QVariant::Char)
-            invalid=vv.toByteArray().trimmed().isEmpty();
-        else if(vv.type()==QVariant::Map || vv.type()==QVariant::Hash)
-            invalid=vv.toHash().isEmpty();
-        else if(vv.type()==QVariant::List || vv.type()==QVariant::StringList)
-            invalid=vv.toList().isEmpty();
-        else if(QByteArray(vv.typeName())==QT_STRINGIFY2(QVVM))
-            invalid=vv.toHash().isEmpty();
-        else if(vv.type()==QVariant::Int || vv.type()==QVariant::UInt || vv.type()==QVariant::LongLong || vv.type()==QVariant::ULongLong || vv.type()==QVariant::Double)
-            invalid=vv.toDouble()==0;
-        else if(vv.type()==QVariant::Date || vv.type()==QVariant::Time || vv.type()==QVariant::DateTime)
-            invalid=vv.toDateTime().isNull();
-        else
-            invalid=vv.isNull();
-    }
-    return invalid;
+    if(!invalid)
+        return false;
+
+    if(vv.typeId()==QMetaType::QUuid)
+        return vv.toUuid().isNull();
+
+    if(vv.typeId()==QMetaType::QUrl)
+        return vv.toUrl().isEmpty();
+
+    if(vv.typeId()==QMetaType::QString || vv.typeId()==QMetaType::QByteArray  || vv.typeId()==QMetaType::QBitArray || vv.typeId()==QMetaType::QChar)
+        return vv.toByteArray().trimmed().isEmpty();
+
+    if(vv.typeId()==QMetaType::QVariantMap || vv.typeId()==QMetaType::QVariantHash)
+        return vv.toHash().isEmpty();
+
+    if(vv.typeId()==QMetaType::QVariantList || vv.typeId()==QMetaType::QStringList)
+        return vv.toList().isEmpty();
+
+    if(QByteArray(vv.typeName())==QT_STRINGIFY2(QVVM))
+        return vv.toHash().isEmpty();
+
+    if(vv.typeId()==QMetaType::Int || vv.typeId()==QMetaType::UInt || vv.typeId()==QMetaType::LongLong || vv.typeId()==QMetaType::ULongLong || vv.typeId()==QMetaType::Double)
+        return vv.toDouble()==0;
+
+    if(vv.typeId()==QMetaType::QDate || vv.typeId()==QMetaType::QTime || vv.typeId()==QMetaType::QDateTime)
+        return vv.toDateTime().isNull();
+
+    return vv.isNull();
+
 }
 
 bool VariantUtil::vIsObject(const QVariant &v)
@@ -983,12 +1022,12 @@ bool VariantUtil::vIsObject(const QVariant &v)
     dPvt();
     p.clear();
     this->setValue(v);
-    if(v.type()==v.List || v.type()==v.StringList)
+    if(v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList)
         return true;
-    else if(v.type()==v.Map || v.type()==v.Hash)
+    if(v.typeId()==QMetaType::QVariantMap || v.typeId()==QMetaType::QVariantHash)
         return true;
-    else
-        return false;
+
+    return false;
 }
 
 bool VariantUtil::vIsList(const QVariant &v)
@@ -996,7 +1035,7 @@ bool VariantUtil::vIsList(const QVariant &v)
     dPvt();
     p.clear();
     this->setValue(v);
-    return (v.type()==v.List || v.type()==v.StringList);
+    return (v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList);
 }
 
 bool VariantUtil::vIsMap(const QVariant &v)
@@ -1004,7 +1043,7 @@ bool VariantUtil::vIsMap(const QVariant &v)
     dPvt();
     p.clear();
     this->setValue(v);
-    return (v.type()==v.Hash || v.type()==v.Map || QByteArray(v.typeName())==QT_STRINGIFY2(QVVM));
+    return (v.typeId()==QMetaType::QVariantHash || v.typeId()==QMetaType::QVariantMap || QByteArray(v.typeName())==QT_STRINGIFY2(QVVM));
 }
 
 bool VariantUtil::vIsString(const QVariant &v)
@@ -1012,7 +1051,7 @@ bool VariantUtil::vIsString(const QVariant &v)
     dPvt();
     p.clear();
     this->setValue(v);
-    return (v.type()==v.String || v.type()==v.ByteArray || v.type()==v.Char);
+    return (v.typeId()==QMetaType::QString || v.typeId()==QMetaType::QByteArray || v.typeId()==QMetaType::QChar);
 }
 
 }

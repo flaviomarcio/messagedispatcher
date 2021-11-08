@@ -32,4 +32,15 @@ QVariant InterfaceMessage::send()
     QRPC_RETURN_ERROR();
 }
 
+QVariant InterfaceMessage::counters()
+{
+    QRPC_METHOD_CHECK_GET();
+    ControllerShedule controller(this);
+    if(!controller.counters(this->published_uuid))
+        this->rq().co(controller.lr().sc());
+    else
+        return controller.lr().resultVariant();
+    QRPC_RETURN_ERROR();
+}
+
 }

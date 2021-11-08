@@ -8,7 +8,7 @@ public:
     const int server_port=9999;
     const QString token_published_uuid=toMd5("acl_account_token");
 };
-static QUuid schedule_uuid="";
+static QUuid schedule_uuid;
 static QStringList schedule_uuidList;
 static QStringList schedule_uuidUnique;
 static QVariantList task_uuidList;
@@ -48,8 +48,7 @@ TEST_F(TestRequestV1, ping)
 TEST_F(TestRequestV1, createSend_fake)
 {
     d_GoogleTestRequestMessage(request);
-
-    auto toList=QStringList()<<"112233445566778899-1"<<"112233445566778899-2";
+    const static auto toList=QVector<QString>{"112233445566778899-1","112233445566778899-2"};
     for(auto&to:toList){
         QVariantMap map;
         map.insert("uuid",QUuid::createUuid());
@@ -68,7 +67,7 @@ TEST_F(TestRequestV1, createSend_sms)
 {
     d_GoogleTestRequestMessage(request);
 
-    auto toList=QStringList()<<"+55(98)9 9135-8855"<<"5598991358855";
+    const static auto toList=QVector<QString>{"+55(98)9 9135-8855", "5598991358855"};
 
     int i=0;
     for(auto&phone:toList){
@@ -90,7 +89,7 @@ TEST_F(TestRequestV1, createSend_e_mail)
 {
     d_GoogleTestRequestMessage(request);
 
-    auto toList=QStringList()<<"email1@magma-ma.com.br"<<"email2@magma-ma.com.br";
+    const static auto toList=QVector<QString>{"email1@magma-ma.com.br", "email2@magma-ma.com.br"};
 
     int i=0;
     for(auto&to:toList){
@@ -112,7 +111,7 @@ TEST_F(TestRequestV1, createSend_push_notification)
 {
     d_GoogleTestRequestMessage(request);
 
-    auto toList=QStringList()<<"5598991358855"<<"5598981148707";
+    const static auto toList=QVector<QString>{"5598991358855", "5598981148707"};
 
     int i=0;
     for(auto&phone:toList){
@@ -135,7 +134,7 @@ TEST_F(TestRequestV1, createcreateSend_telegram)
 {
     d_GoogleTestRequestMessage(request);
 
-    auto toList=QStringList()<<"5598991358855"<<"5598981148707";
+    const static auto toList=QVector<QString>{"5598991358855", "5598981148707"};
 
     int i=0;
     for(auto&phone:toList){
@@ -157,7 +156,7 @@ TEST_F(TestRequestV1, createSend_whatsapp)
 {
     d_GoogleTestRequestMessage(request);
 
-    auto toList=QStringList()<<"5598991358855"<<"5598981148707";
+    const static auto toList=QVector<QString>{"5598991358855", "5598981148707"};
 
     int i=0;
     for(auto&phone:toList){
@@ -213,7 +212,7 @@ TEST_F(TestRequestV1, insert_single_push)
 
             auto v_schedule_uuid=bodyMap.value("schedule_uuid");
 
-            if(v_schedule_uuid.type()==QVariant::List || v_schedule_uuid.type()==QVariant::StringList){
+            if(v_schedule_uuid.typeId()==QMetaType::QVariantList || v_schedule_uuid.typeId()==QMetaType::QStringList){
                 for(auto&v:v_schedule_uuid.toList()){
                     if(!schedule_uuidList.contains(v.toString()))
                         schedule_uuidList<<v.toString();
@@ -227,7 +226,7 @@ TEST_F(TestRequestV1, insert_single_push)
 
             auto vTask=bodyMap.value("tasks");
             QVariantList vTaskList;
-            if(vTask.type()==QVariant::List || vTask.type()==QVariant::StringList){
+            if(vTask.typeId()==QMetaType::QVariantList || vTask.typeId()==QMetaType::QStringList){
                 for(auto&v:vTask.toList())
                     vTaskList<<v;
             }
@@ -274,7 +273,7 @@ TEST_F(TestRequestV1, insert_massive)
 
             auto v_schedule_uuid=bodyMap.value("schedule_uuid");
 
-            if(v_schedule_uuid.type()==QVariant::List || v_schedule_uuid.type()==QVariant::StringList){
+            if(v_schedule_uuid.typeId()==QMetaType::QVariantList || v_schedule_uuid.typeId()==QMetaType::QStringList){
                 for(auto&v:v_schedule_uuid.toList()){
                     if(!schedule_uuidList.contains(v.toString()))
                         schedule_uuidList<<v.toString();
@@ -288,7 +287,7 @@ TEST_F(TestRequestV1, insert_massive)
 
             auto vTask=bodyMap.value("tasks");
             QVariantList vTaskList;
-            if(vTask.type()==QVariant::List || vTask.type()==QVariant::StringList){
+            if(vTask.typeId()==QMetaType::QVariantList || vTask.typeId()==QMetaType::QStringList){
                 for(auto&v:vTask.toList())
                     vTaskList<<v;
             }
@@ -340,6 +339,21 @@ TEST_F(TestRequestV1, send)
             EXPECT_EQ(body.value("state").toInt()==2/*Send*/,true)<<"fail";
         }
     }
+}
+
+TEST_F(TestRequestV1, counters)
+{
+    d_GoogleTestRequestMessage(request);
+
+    auto&response=request.call(QRpc::Get,"counters",QVariant());
+    EXPECT_EQ(response.isOk(),true)<<"fail";
+    auto hash=response.bodyHash();
+    EXPECT_EQ(hash.isEmpty(),false)<<"fail";
+    EXPECT_EQ(hash.contains(qsl("tasks_count_day")),true)<<"fail";
+    EXPECT_EQ(hash.contains(qsl("tasks_count_month")),true)<<"fail";
+
+    EXPECT_EQ(hash.value(qsl("tasks_count_day")).toInt()>0,true)<<"fail";
+    EXPECT_EQ(hash.value(qsl("tasks_count_month")).toInt()>0,true)<<"fail";
 }
 
 TEST_F(TestRequestV1, stat_after_send)
@@ -410,6 +424,7 @@ TEST_F(TestRequestV1, stats)
         EXPECT_EQ(body.isEmpty(),false)<<"fail";
     }
 }
+
 
 TEST_F(TestRequestV1, stop)
 {

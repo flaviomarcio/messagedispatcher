@@ -59,7 +59,7 @@ public:
 
         if(dirHome.exists()){
             QDir dir(qsl(":"));
-            dir.setNameFilters(QStringList()<<qsl("*.json"));
+            dir.setNameFilters(QStringList{qsl("*.json")});
             for(auto&info:dir.entryInfoList()){
                 QFile fileSrc(info.filePath());
                 QFile fileDst(qsl("%1/%2").arg(applicationSettingDir,info.fileName()));
@@ -112,4 +112,4 @@ public:
     }
 };
 
-} // namespace QApr
+}

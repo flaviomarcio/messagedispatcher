@@ -47,7 +47,7 @@ public:
         map.insert(qsl("boolean")+keyTrue,qtr("Sim"));
         map.insert(qsl("boolean")+keyFalse,qtr("Não"));
 
-        StringStringStringMap __staticMaskMap;
+            StringStringStringMap __staticMaskMap;
         __staticMaskMap.insert(brz.nativeCountryName(), map);
         __staticMaskMap.insert(sys.nativeCountryName(), map);
         __staticMaskMap.insert(loc.nativeLanguageName(), map);
@@ -61,10 +61,10 @@ Q_GLOBAL_STATIC(FormattingUtilStruct,___formattingUtilStruct)
 
 
 #define dPvt()\
-    auto&p = *reinterpret_cast<FormattingUtilPvt*>(this->p)
+auto&p = *reinterpret_cast<FormattingUtilPvt*>(this->p)
 
 
-auto&consts=*___formattingUtilStruct;
+          auto&consts=*___formattingUtilStruct;
 
 void init(){
     consts.init();
@@ -240,30 +240,32 @@ const QString FormattingUtil::toString()
 const QString FormattingUtil::v(const QVariant &v, int prec)
 {
     set_v;
-    auto t=this->type();
+    auto t=this->typeId();
     auto tn=QByteArray(this->typeName());
-    if(t==QVariant::Int || t==QVariant::UInt || t==QVariant::LongLong || t==QVariant::ULongLong)
+    if(t==QMetaType::Int || t==QMetaType::UInt || t==QMetaType::LongLong || t==QMetaType::ULongLong)
         return this->toInt(v);
-    else if(tn==consts.QCurrency_class_name || tn==consts.QCurrency_class_name_short || tn==consts.qcurrency_class_name_short)
+
+    if(tn==consts.QCurrency_class_name || tn==consts.QCurrency_class_name_short || tn==consts.qcurrency_class_name_short)
         return this->toCurrency(v, prec);
-    else if(tn==consts.qpercent_class_name)
+
+    if(tn==consts.qpercent_class_name)
         return this->toPercent(v, prec);
-    else if(t==QVariant::Double)
+    if(t==QMetaType::Double)
         return this->toDouble(v, prec);
-    else if(t==QVariant::Date)
+    if(t==QMetaType::QDate)
         return this->toDate(v);
-    else if(t==QVariant::Time)
+    if(t==QMetaType::QTime)
         return this->toTime(v);
-    else if(t==QVariant::DateTime)
+    if(t==QMetaType::QDateTime)
         return this->toDateTime(v);
-    else if(t==QVariant::Bool)
+    if(t==QMetaType::Bool)
         return this->toBool(v);
-    else if(t==QVariant::Uuid)
+    if(t==QMetaType::QUuid)
         return this->toUuid().toString();
-    else if(t==QVariant::Url)
+    if(t==QMetaType::QUrl)
         return this->toUrl().toString();
-    else
-        return QVariant::toString();
+
+    return QVariant::toString();
 
 }
 

@@ -1,5 +1,4 @@
-#ifndef SERVERSERVICE_DAOBASE_H
-#define SERVERSERVICE_DAOBASE_H
+#pragma once
 
 #include <QHash>
 #include <QMap>
@@ -21,6 +20,4 @@ signals:
 
 };
 
-} // namespace ServerService
-
-#endif // SERVERSERVICE_DAOBASE_H
+}

@@ -8,13 +8,13 @@
 
 typedef QVector<int> QStmVTypesList;
 
-static const QStmVTypesList QStmTypesListString=QStmVTypesList()<<QVariant::Uuid<<QVariant::String<<QVariant::ByteArray<<QVariant::Char<<QVariant::BitArray;
-static const QStmVTypesList QStmTypesListNumeric=QStmVTypesList()<<QVariant::LongLong<<QVariant::Int<<QVariant::UInt<<QVariant::ULongLong<<QVariant::Double;
-static const QStmVTypesList QStmTypesListIntergers=QStmVTypesList()<<QVariant::LongLong<<QVariant::Int<<QVariant::UInt<<QVariant::ULongLong<<QVariant::Double;
-static const QStmVTypesList QStmTypesListClass=QStmVTypesList()<<QVariant::Url<<QVariant::Map<<QVariant::Hash<<QVariant::List<<QVariant::StringList;
-static const QStmVTypesList QStmTypesListObjects=QStmVTypesList()<<QVariant::Map<<QVariant::Hash<<QVariant::List<<QVariant::StringList;
-static const QStmVTypesList QStmTypesListDates=QStmVTypesList()<<QVariant::Date<<QVariant::DateTime<<QVariant::Time;
-static const QStmVTypesList QStmTypesListBool=QStmVTypesList()<<QVariant::Bool;
+static const QStmVTypesList QStmTypesListString=QStmVTypesList{QMetaType::QUuid,QMetaType::QString,QMetaType::QByteArray,QMetaType::QChar,QMetaType::QBitArray};
+static const QStmVTypesList QStmTypesListNumeric=QStmVTypesList{QMetaType::LongLong,QMetaType::Int,QMetaType::UInt,QMetaType::ULongLong,QMetaType::Double};
+static const QStmVTypesList QStmTypesListIntergers=QStmVTypesList{QMetaType::LongLong,QMetaType::Int,QMetaType::UInt,QMetaType::ULongLong,QMetaType::Double};
+static const QStmVTypesList QStmTypesListClass=QStmVTypesList{QMetaType::QUrl,QMetaType::QVariantMap,QMetaType::QVariantHash,QMetaType::QVariantList,QMetaType::QStringList};
+static const QStmVTypesList QStmTypesListObjects=QStmVTypesList{QMetaType::QVariantMap,QMetaType::QVariantHash,QMetaType::QVariantList,QMetaType::QStringList};
+static const QStmVTypesList QStmTypesListDates=QStmVTypesList{QMetaType::QDate,QMetaType::QDateTime,QMetaType::QTime};
+static const QStmVTypesList QStmTypesListBool=QStmVTypesList{QMetaType::Bool};
 
 enum QStmRequestMethod {Head=1, Get=2, Post=4, Put=8, Delete=16, Options=32, MaxMethod=Options};
 
@@ -50,8 +50,8 @@ static const QHash<QString,QStmRequestMethod> ___QStmRequestMethodType(){
 }
 static const auto QStmRequestMethodType=___QStmRequestMethodType();
 enum QStmProtocol {TcpSocket=1, UdpSocket=2, WebSocket=4, Mqtt=8, Amqp=16, Http=32, Https=64};
-static const QHash<QString,QStmProtocol> ___QStmProtocolType(){
-    QHash<QString,QStmProtocol> r;
+static const QHash<QString,int> ___QStmProtocolType(){
+    QHash<QString,int> r;
 
     r.insert(QT_STRINGIFY2(TcpSocket),TcpSocket  );
     r.insert(QT_STRINGIFY2(UdpSocket),UdpSocket  );
@@ -71,8 +71,8 @@ static const QHash<QString,QStmProtocol> ___QStmProtocolType(){
     return r;
 }
 
-static const QMap<QStmProtocol, QString> ___QStmProtocolName(){
-    QMap<QStmProtocol, QString> r;
+static const QHash<int, QString> ___QStmProtocolName(){
+    QHash<int, QString> r;
     r.insert(TcpSocket , QT_STRINGIFY2(tcpsocket));
     r.insert(UdpSocket , QT_STRINGIFY2(udpsocket));
     r.insert(WebSocket , QT_STRINGIFY2(websocket));
@@ -83,10 +83,10 @@ static const QMap<QStmProtocol, QString> ___QStmProtocolName(){
     return r;
 }
 
-static const QMap<QStmProtocol, QString> QStmProtocolName=___QStmProtocolName();
-static const QHash<QString,QStmProtocol> QStmProtocolType=___QStmProtocolType();
-static const QStmProtocol rpcProtocolMin=QStmProtocol(1);
-static const QStmProtocol rpcProtocolMax=Https;
+static const auto QStmProtocolName=___QStmProtocolName();
+static const auto qStmProtocolType=___QStmProtocolType();
+static const auto rpcProtocolMin=QStmProtocol(1);
+static const auto rpcProtocolMax=Https;
 class QStmListen;
 class QStmListenProtocol;
 
@@ -97,30 +97,30 @@ static bool ___registerMetaType(){
 
 static const auto registerMetaType=___registerMetaType();
 
-static const auto vGET=/*QVariant*/("get");
-static const auto vPOST=/*QVariant*/("post");
-static const auto vPUT=/*QVariant*/("put");
-static const auto vDELETE=/*QVariant*/("delete");
+static const auto vGET=("get");
+static const auto vPOST=("post");
+static const auto vPUT=("put");
+static const auto vDELETE=("delete");
 
-static const auto vObject=/*QVariant*/("object");
-static const auto vList=/*QVariant*/("list");
+static const auto vObject=("object");
+static const auto vList=("list");
 
-static const auto vActions=/*QVariant*/("actions");
-static const auto vAuto=/*QVariant*/"auto";
-static const auto vText=/*QVariant*/("text");
-static const auto vNumber=/*QVariant*/("number");
-static const auto vNumeric=/*QVariant*/("numeric");
-static const auto vInt=/*QVariant*/("int");
-static const auto vDate=/*QVariant*/("date");
-static const auto vTime=/*QVariant*/("time");
-static const auto vDatetime=/*QVariant*/("datetime");
-static const auto vCurrency=/*QVariant*/("currency");
-static const auto vDouble=/*QVariant*/("double");
-static const auto vBool=/*QVariant*/("bool");
+static const auto vActions=("actions");
+static const auto vAuto="auto";
+static const auto vText=("text");
+static const auto vNumber=("number");
+static const auto vNumeric=("numeric");
+static const auto vInt=("int");
+static const auto vDate=("date");
+static const auto vTime=("time");
+static const auto vDatetime=("datetime");
+static const auto vCurrency=("currency");
+static const auto vDouble=("double");
+static const auto vBool=("bool");
 
-static const auto vaStart=/*QVariant*/("start");
-static const auto vaCenter=/*QVariant*/("center");
-static const auto vaEnd=/*QVariant*/("end");
+static const auto vaStart=("start");
+static const auto vaCenter=("center");
+static const auto vaEnd=("end");
 
 static const auto vpId="id";
 static const auto vpName="name";
@@ -129,6 +129,7 @@ static const auto vpHeaders="headers";
 static const auto vpFilters="filters";
 static const auto vpItems="items";
 static const auto vpLinks="links";
+static const auto vpResultInfo="resultInfo";
 static const auto vpFlags="flags";
 static const auto vpEdit="edit";
 static const auto vpPerfumery="perfumerys";

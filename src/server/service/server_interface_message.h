@@ -13,6 +13,7 @@ namespace ServerService {
         Q_INVOKABLE ~InterfaceMessage();
 
         Q_INVOKABLE QVariant send();
+        Q_INVOKABLE QVariant counters();
     };
 
     QRPC_CONTROLLER_AUTO_REGISTER(InterfaceMessage)

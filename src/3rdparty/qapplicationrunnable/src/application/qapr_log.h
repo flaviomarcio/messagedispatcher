@@ -23,4 +23,4 @@ public:
     static void disabled();
 };
 
-} // namespace QApr
+}

@@ -63,13 +63,13 @@ QVariant SettingBase::url()const
         auto url=qsl("%1:%2/%3").arg(p.hostName).arg(p.port).arg(route);
         while(url.contains(qsl("//")))
             url=url.replace(qsl("//"), qsl("/"));
-        if(p.protocol.canConvert(p.protocol.Map) || p.protocol.canConvert(p.protocol.List)){
+        if(p.protocol.typeId()==QMetaType::QVariantMap || p.protocol.typeId()==QMetaType::QVariantList){
             auto record=p.protocol.toList();
             for(const auto&v:record){
                 QString protocol;
-                if(v.canConvert(v.Int))
-                    protocol=QStmProtocol(v.toInt());
-                else if(v.canConvert(v.String))
+                if(v.typeId()==QMetaType::Int || v.typeId()==QMetaType::LongLong || v.typeId()==QMetaType::ULong || v.typeId()==QMetaType::UInt)
+                    protocol=QStmProtocolName.value(QStmProtocol(v.toInt()));
+                else if(v.typeId()==QMetaType::QString)
                     protocol=v.toString().toLower();
                 else
                     continue;
@@ -117,14 +117,10 @@ QVariant SettingBase::protocol() const
 void SettingBase::setProtocol(const QVariant &value)
 {
     dPvt();
-    if(value.type()==value.Int || value.type()==value.UInt || value.type()==value.Double || value.type()==value.LongLong || value.type()==value.ULongLong){
-        auto v=value.toInt();
-        auto i=QStmProtocol(v);
-        p.protocol=QStmProtocolType.key(i);
-    }
-    else{
+    if(value.typeId()==QMetaType::Int || value.typeId()==QMetaType::Int || value.typeId()==QMetaType::Double || value.typeId()==QMetaType::LongLong || value.typeId()==QMetaType::ULongLong)
+        p.protocol=QStmProtocolName.value(value.toInt());
+    else
         p.protocol=value;
-    }
 }
 
 QString SettingBase::method() const

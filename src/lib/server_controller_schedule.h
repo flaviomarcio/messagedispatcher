@@ -1,5 +1,4 @@
-#ifndef app_ControllerShedule_H
-#define app_ControllerShedule_H
+#pragma once
 
 #include "./server_base_controller.h"
 
@@ -26,8 +25,8 @@ namespace ServerService {
         ResultValue &send(const QUuid &published_uuid, const QUuid&customer_uuid, const QVariant &type, const QByteArray &to, const QByteArray &subject, const QByteArray &payload, const QVariant&attachment);
 
         ResultValue &stats();
+
+        ResultValue &counters(const QUuid&published_uuid);
     };
 
 }
-
-#endif

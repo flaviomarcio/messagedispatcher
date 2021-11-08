@@ -8,46 +8,57 @@
 
 namespace QApr {
 
-/**
- * @brief The Interface class
- *
- * base inicial criada para aplicacoes
- *  contem metodos e verificacao e alguns utilitarios
- */
+//!
+//! \brief The InterfaceBase class
+//!base inicial criada para aplicacoes, contem metodos e verificacao e alguns utilitarios
 class Q_APR_EXPORT InterfaceBase : public QRpc::QRPCInterfaceCheck
 {
     Q_OBJECT
     Q_DECLARE_OBJECT()
     QORM_CONNECTION_SUPPORT
 public:
-    /**
-     * @brief Interface
-     * @param parent
-     */
+    //!
+    //! \brief InterfaceBase
+    //! \param parent
+    //!
     Q_INVOKABLE explicit InterfaceBase(QObject *parent = nullptr);
 
-    /**
-     * @brief ~Interface
-     */
+    //!
+    //! \brief ~InterfaceBase
+    //!
     Q_INVOKABLE ~InterfaceBase();
 
-    /**
-     * @brief vu
-     * @return
-     */
     QT_DEPRECATED_X(" trocar o uso por Q_DECLARE_VU;")
     virtual VariantUtil &vu();
 
-    /**
-     * @brief check
-     * @return
-     *
-     * method de verificacao simples
-     */
+    //!
+    //! \brief check
+    //! \return
+    //!method de verificacao simples
     Q_INVOKABLE virtual QVariant check();
+
+    //!
+    //! \brief ping
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariant ping();
+
+    //!
+    //! \brief fullCheck
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariant fullCheck();
+
+    //!
+    //! \brief connectionsCheck
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariant connectionsCheck();
+
+    //!
+    //! \brief businessCheck
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariant businessCheck();
 
 
@@ -55,4 +66,4 @@ private:
     void *p = nullptr;
 };
 
-} // namespace QApr
+}

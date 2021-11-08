@@ -52,36 +52,32 @@ virtual void setTransactionRollbackForce(bool value)                            
 }                                                                                   \
 
 
-/**
- * @brief The Interface class
- *
- * base inicial criada para aplicacoes
- *  contem metodos e verificacao e alguns utilitarios
- */
+//!
+//! \brief The Interface class
+//!base inicial criada para aplicacoes, contem metodos e verificacao e alguns utilitarios
 class Q_APR_EXPORT Interface : public InterfaceAuthorization
 {
     Q_OBJECT
     Q_DECLARE_OBJECT()
     QRPC_DECLARE_MODULE(qsl_fy(QApr))
     QRPC_DECLARE_DESCRIPTION(qsl_fy(QApr::Interface))
-    QORM_CONNECTION_SUPPORT
 public:
-    /**
-     * @brief Interface
-     * @param parent
-     */
+    //!
+    //! \brief Interface
+    //! \param parent
+    //!
     Q_INVOKABLE explicit Interface(QObject *parent = nullptr);
 
-    /**
-     * @brief ~Interface
-     */
+    //!
+    //! \brief ~Interface
+    //!
     Q_INVOKABLE ~Interface();
 
-    /**
-     * @brief backOfficeMenu
-     * @return
-     */
+    //!
+    //! \brief backOfficeMenu
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariantList backOfficeMenu() const;
 };
 
-} // namespace QApr
+}
