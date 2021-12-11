@@ -212,7 +212,11 @@ TEST_F(TestRequestV1, insert_single_push)
 
             auto v_schedule_uuid=bodyMap.value("schedule_uuid");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             if(v_schedule_uuid.typeId()==QMetaType::QVariantList || v_schedule_uuid.typeId()==QMetaType::QStringList){
+#else
+            if(v_schedule_uuid.type()==QVariant::List || v_schedule_uuid.type()==QVariant::StringList){
+#endif
                 for(auto&v:v_schedule_uuid.toList()){
                     if(!schedule_uuidList.contains(v.toString()))
                         schedule_uuidList<<v.toString();
@@ -226,7 +230,11 @@ TEST_F(TestRequestV1, insert_single_push)
 
             auto vTask=bodyMap.value("tasks");
             QVariantList vTaskList;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             if(vTask.typeId()==QMetaType::QVariantList || vTask.typeId()==QMetaType::QStringList){
+#else
+            if(vTask.type()==QVariant::List || vTask.type()==QVariant::StringList){
+#endif
                 for(auto&v:vTask.toList())
                     vTaskList<<v;
             }
@@ -273,7 +281,11 @@ TEST_F(TestRequestV1, insert_massive)
 
             auto v_schedule_uuid=bodyMap.value("schedule_uuid");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             if(v_schedule_uuid.typeId()==QMetaType::QVariantList || v_schedule_uuid.typeId()==QMetaType::QStringList){
+#else
+            if(v_schedule_uuid.type()==QVariant::List || v_schedule_uuid.type()==QVariant::StringList){
+#endif
                 for(auto&v:v_schedule_uuid.toList()){
                     if(!schedule_uuidList.contains(v.toString()))
                         schedule_uuidList<<v.toString();
@@ -287,7 +299,11 @@ TEST_F(TestRequestV1, insert_massive)
 
             auto vTask=bodyMap.value("tasks");
             QVariantList vTaskList;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             if(vTask.typeId()==QMetaType::QVariantList || vTask.typeId()==QMetaType::QStringList){
+#else
+            if(vTask.type()==QVariant::List || vTask.type()==QVariant::StringList){
+#endif
                 for(auto&v:vTask.toList())
                     vTaskList<<v;
             }

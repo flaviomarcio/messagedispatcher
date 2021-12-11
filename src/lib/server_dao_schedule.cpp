@@ -14,6 +14,27 @@ DaoSchedule::~DaoSchedule()
 
 }
 
+ResultValue &DaoSchedule::tasks_count_total(const QUuid &published_uuid)
+{
+    Q_DECLARE_DU;
+    QOrm::Query query(this);
+    auto&select=query.builder().select();
+    select.
+        fields().count();
+    select
+        .from(ScheduleTaskR)
+        .where()
+        .equal(ScheduleTaskM.published_uuid_field(), published_uuid);
+
+    if(!query.exec())
+        return this->lr(query.lastError());
+
+    if (!query.next())
+        return this->lr(QVariant(0));
+
+    return this->lr(query.value(0));
+}
+
 ResultValue &DaoSchedule::tasks_count_month(const QUuid &published_uuid, const QDate &dt)
 {
     Q_DECLARE_DU;

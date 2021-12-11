@@ -1,3 +1,3 @@
-#include "../3rdparty/qapplicationrunnable/src/application/qapr_mainservice.h"
+#include <QtReforceInclude>
 
-RPC_APPLICATION_START()
+QAPR_MAIN_DECLARE()

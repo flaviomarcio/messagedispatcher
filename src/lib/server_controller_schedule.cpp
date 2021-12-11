@@ -69,13 +69,20 @@ namespace ServerService {
         //payload
         QVariantList listDestine;
         QVariantList listPayload;
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         if(to.typeId()==QMetaType::QVariantList || to.typeId()==QMetaType::QStringList)
+#else
+        if(to.type()==QVariant::List || to.type()==QVariant::StringList)
+#endif
             listDestine=to.toList();
         else
             listDestine<<to;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         if(payload.typeId()==QMetaType::QVariantList || payload.typeId()==QMetaType::QStringList)
+#else
+        if(payload.type()==QVariant::List || payload.type()==QVariant::StringList)
+#endif
             listPayload=payload.toList();
         else
             listPayload<<payload;
@@ -299,9 +306,11 @@ namespace ServerService {
     {
         DaoSchedule dao(this);
 
-        Q_UNUSED(published_uuid)
+        if(!dao.tasks_count_total(published_uuid))
+            return this->lr();
 
         auto dt=QDate::currentDate();
+        int __tasks_count_total=dao.lr().resultInt();
 
         if(!dao.tasks_count_month(published_uuid, dt))
             return this->lr();
@@ -315,6 +324,7 @@ namespace ServerService {
 
         auto __return=QVariantHash
             {
+                { qsl("tasks_count_total"), __tasks_count_total },
                 { qsl("tasks_count_month"), __tasks_count_month },
                 { qsl("tasks_count_day"), __tasks_count_day }
             };

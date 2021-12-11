@@ -1,8 +1,6 @@
 include($$PWD/../3rdparty/simplemail/simplemail.pri)
-include($$PWD/../3rdparty/qstm/test/qstm-test.pri)
-include($$PWD/../3rdparty/qorm/test/qorm-test.pri)
-include($$PWD/../3rdparty/qrpc/test/qrpc-test.pri)
-include($$PWD/../3rdparty/qapplicationrunnable/qapplicationrunnable-test.pri)
+include($$PWD/../3rdparty/qtreforce-sdk/qtreforce-sdk-test.pri)
+
 include($$PWD/model/server.model.pri)
 
 INCLUDEPATH+=$$PWD

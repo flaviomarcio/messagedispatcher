@@ -15,6 +15,14 @@ public:
     Q_INVOKABLE explicit DaoSchedule(QObject *parent = nullptr);
     Q_INVOKABLE ~DaoSchedule();
 
+
+    //!
+    //! \brief tasks_count_total
+    //! \param published_uuid
+    //! \return
+    //!
+    ResultValue &tasks_count_total(const QUuid&published_uuid);
+
     //!
     //! \brief tasks_count_month
     //! \param published_uuid

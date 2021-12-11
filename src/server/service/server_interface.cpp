@@ -1,6 +1,7 @@
 #include "./server_interface.h"
 #include "./qapr_application.h"
 #include "./qapr_server.h"
+#include <QCoreApplication>
 #include <QMutex>
 #include <QVariantHash>
 #include "./server_provider.h"
@@ -52,6 +53,8 @@ static void init(){
     }
 }
 
+Q_COREAPP_STARTUP_FUNCTION(init);
+
 ServerInterface::ServerInterface(QObject *parent):QApr::Interface(parent)
 {
 
@@ -92,10 +95,8 @@ const QVariantHash &ServerInterface::providers()
 
 bool ServerInterface::requestBeforeInvoke()
 {
-    if(QApr::Interface::requestBeforeInvoke()){
-        init();
+    if(QApr::Interface::requestBeforeInvoke())
         return true;
-    }
     return false;
 }
 

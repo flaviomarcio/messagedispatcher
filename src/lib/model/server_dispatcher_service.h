@@ -28,7 +28,12 @@ public:
 
     DispatcherServiceMessage&operator+=(const QVariant&v){
         QVariantList vv;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         if(v.typeId()==QMetaType::QVariantList || v.typeId()==QMetaType::QStringList)
+#else
+        if(v.type()==QVariant::List || v.type()==QVariant::StringList)
+#endif
+
             vv=v.toList();
         else
             vv<<v;
