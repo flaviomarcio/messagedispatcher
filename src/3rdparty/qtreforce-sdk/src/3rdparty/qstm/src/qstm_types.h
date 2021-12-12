@@ -61,6 +61,8 @@ static const int QMetaType_QUuid        = QMetaType::QUuid         ;
 static const int QMetaType_QVariantHash = QMetaType::QVariantHash  ;
 static const int QMetaType_QVariantList = QMetaType::QVariantList  ;
 static const int QMetaType_QVariantMap  = QMetaType::QVariantMap   ;
+static const int QMetaType_CustomType   = 65538                    ;
+
 
 static const QStmVTypesList QStmTypesListString=QStmVTypesList{QMetaType_QString,QMetaType_QByteArray,QMetaType_QChar,QMetaType_QBitArray};
 static const QStmVTypesList QStmTypesListMetaString=QStmVTypesList{QMetaType_QUuid, QMetaType_QString, QMetaType_QByteArray, QMetaType_QChar, QMetaType_QBitArray};
