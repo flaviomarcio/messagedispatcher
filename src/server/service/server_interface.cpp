@@ -1,6 +1,5 @@
 #include "./server_interface.h"
-#include "./qapr_application.h"
-#include "./qapr_server.h"
+#include <QtReforce/QApr>
 #include <QCoreApplication>
 #include <QMutex>
 #include <QVariantHash>
@@ -18,7 +17,7 @@ static void init(){
     if(!___init){
         QMutexLocker locker(&___mutex);
         if(!___init){
-            auto&pool=QApr::Application::instance().pool();
+            auto&pool=QApr::Application::i().pool();
             auto db=pool.get();
             QApr::Interface c(nullptr);
             if(c.setConnection(db)){
@@ -56,11 +55,6 @@ static void init(){
 Q_COREAPP_STARTUP_FUNCTION(init);
 
 ServerInterface::ServerInterface(QObject *parent):QApr::Interface(parent)
-{
-
-}
-
-ServerInterface::~ServerInterface()
 {
 
 }

@@ -12,7 +12,7 @@
          "sslKeyFile":"",
          "sslCertFile":""
       },
-      "http":{"enabled":true, "port":[8085]}
+      "http":{"enabled":true, "port":[28085]}
    },
     "connection":{
         "secret": "YzUxNDFhMDA5",
@@ -23,7 +23,7 @@
                 ,"hostName" : "127.0.0.1"
                 ,"userName" : "magmav1"
                 ,"password" : "magmav1"
-                ,"port" : 5432
+                ,"port" : 25432
                 ,"dataBaseName" : "magmav1"
                 ,"schemaNames" : "public, msg_v1"
             }

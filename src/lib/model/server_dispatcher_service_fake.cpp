@@ -1,8 +1,8 @@
 #include "server_dispatcher_service_fake.h"
 #include "./server_publisher.h"
 #include "./server_schedule_task.h"
-#include "./qrpc_request.h"
-#include "./qapr_application.h"
+#include <QtReforce/QRpc>
+#include <QtReforce/QApr>
 
 namespace ServerService {
 

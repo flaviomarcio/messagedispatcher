@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QList>
-#include "./qstm_macro.h"
+#include <QtReforce/QStm>
 
 #define DeclareProviderType(v)\
     enum v{dsFake=0, dsSms=1, dsMail=2, dsPushNotification=4, dsTelegram=8, dsWhatsApp=16}
@@ -14,31 +14,31 @@ static const QHash<QString,ProviderType> TaskTypeMap
     (
         {
             {qsl_number(dsMail), dsMail},
-            {qsl_fy(dsMail), dsMail},
-            {qsl_fy(dsmail), dsMail},
-            {qsl_fy(mail), dsMail},
-            {qsl_fy(email), dsMail},
-            {qsl_fy(e-mail), dsMail},
+            {QT_STRINGIFY2(dsMail), dsMail},
+            {QT_STRINGIFY2(dsmail), dsMail},
+            {QT_STRINGIFY2(mail), dsMail},
+            {QT_STRINGIFY2(email), dsMail},
+            {QT_STRINGIFY2(e-mail), dsMail},
 
             {qsl_number(dsSms), dsSms},
-            {qsl_fy(dsSms), dsSms},
-            {qsl_fy(dssms), dsSms},
-            {qsl_fy(sms), dsSms},
+            {QT_STRINGIFY2(dsSms), dsSms},
+            {QT_STRINGIFY2(dssms), dsSms},
+            {QT_STRINGIFY2(sms), dsSms},
 
             {qsl_number(dsPushNotification), dsPushNotification},
-            {qsl_fy(dsPushNotification), dsPushNotification},
-            {qsl_fy(dspushnotification), dsPushNotification},
-            {qsl_fy(pushnotification), dsPushNotification},
+            {QT_STRINGIFY2(dsPushNotification), dsPushNotification},
+            {QT_STRINGIFY2(dspushnotification), dsPushNotification},
+            {QT_STRINGIFY2(pushnotification), dsPushNotification},
 
             {qsl_number(dsTelegram), dsTelegram},
-            {qsl_fy(dsTelegram), dsTelegram},
-            {qsl_fy(dstelegram), dsTelegram},
-            {qsl_fy(telegram), dsTelegram},
+            {QT_STRINGIFY2(dsTelegram), dsTelegram},
+            {QT_STRINGIFY2(dstelegram), dsTelegram},
+            {QT_STRINGIFY2(telegram), dsTelegram},
 
             {qsl_number(dsWhatsApp), dsWhatsApp},
-            {qsl_fy(dsWhatsApp), dsWhatsApp},
-            {qsl_fy(dswhatsapp), dsWhatsApp},
-            {qsl_fy(whatsapp), dsWhatsApp}
+            {QT_STRINGIFY2(dsWhatsApp), dsWhatsApp},
+            {QT_STRINGIFY2(dswhatsapp), dsWhatsApp},
+            {QT_STRINGIFY2(whatsapp), dsWhatsApp}
         } );
 
 static const auto TaskTypeList=QList<ProviderType>()<<dsFake<<dsMail<<dsSms<<dsPushNotification<<dsTelegram<<dsWhatsApp;

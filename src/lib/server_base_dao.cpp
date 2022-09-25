@@ -7,9 +7,4 @@ DaoBase::DaoBase(QObject *parent) : QOrm::Dao(parent)
 
 }
 
-DaoBase::~DaoBase()
-{
-
-}
-
 }

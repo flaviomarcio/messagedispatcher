@@ -3,8 +3,7 @@
 #include <QHash>
 #include <QMap>
 #include <QUuid>
-#include "./server_model.h"
-#include "./qorm_dao.h"
+#include <QtReforce/QOrm>
 
 namespace ServerService {
 
@@ -13,7 +12,6 @@ class DaoSchedule : public QOrm::Dao
     Q_OBJECT
 public:
     Q_INVOKABLE explicit DaoSchedule(QObject *parent = nullptr);
-    Q_INVOKABLE ~DaoSchedule();
 
 
     //!

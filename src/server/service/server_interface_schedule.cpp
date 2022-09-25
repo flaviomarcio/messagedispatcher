@@ -9,14 +9,8 @@ InterfaceSchedule::InterfaceSchedule(QObject *parent):ServerInterface(parent)
 
 }
 
-InterfaceSchedule::~InterfaceSchedule()
-{
-
-}
-
 QVariant InterfaceSchedule::create()
 {
-    QRPC_METHOD_CHECK_POST();
     ControllerShedule controller(this);
     if(controller.create(this->published_uuid))
         return controller.lr().resultVariant();
@@ -25,7 +19,6 @@ QVariant InterfaceSchedule::create()
 
 QVariant InterfaceSchedule::insert()
 {
-    QRPC_METHOD_CHECK_POST();
     QRPC_V_SET_UUID(schedule_uuid);
     QRPC_V_SET_UUID(uuid);
     QRPC_V_SET(type);
@@ -40,7 +33,6 @@ QVariant InterfaceSchedule::insert()
 
 QVariant InterfaceSchedule::send()
 {
-    QRPC_METHOD_CHECK_POST();
     QRPC_V_SET_UUID(schedule_uuid);
     QRPC_V_CHECK_BODY_PARSER();
     ControllerShedule controller(this);
@@ -51,7 +43,6 @@ QVariant InterfaceSchedule::send()
 
 QVariant InterfaceSchedule::cancel()
 {
-    QRPC_METHOD_CHECK_POST();
     QRPC_V_SET_UUID(schedule_uuid);
     QRPC_V_CHECK_BODY_PARSER();
     ControllerShedule controller(this);
@@ -62,7 +53,6 @@ QVariant InterfaceSchedule::cancel()
 
 QVariant InterfaceSchedule::stat()
 {
-    QRPC_METHOD_CHECK_POST();
     QRPC_V_SET_UUID(uuid);
     QRPC_V_CHECK_BODY_PARSER();
     ControllerShedule controller(this);
@@ -73,7 +63,6 @@ QVariant InterfaceSchedule::stat()
 
 QVariant InterfaceSchedule::stat_task()
 {
-    QRPC_METHOD_CHECK_POST();
     QRPC_V_SET_UUID(uuid);
     QRPC_V_CHECK_BODY_PARSER();
     ControllerShedule controller(this);
@@ -84,7 +73,6 @@ QVariant InterfaceSchedule::stat_task()
 
 QVariant InterfaceSchedule::stats()
 {
-    QRPC_METHOD_CHECK_POST();
     ControllerShedule controller(this);
     if(controller.stats())
         return controller.lr().resultVariant();

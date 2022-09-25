@@ -8,9 +8,4 @@ ControllerBase::ControllerBase(QObject *parent) : QOrm::Controller(parent)
 
 }
 
-ControllerBase::~ControllerBase()
-{
-
-}
-
 }

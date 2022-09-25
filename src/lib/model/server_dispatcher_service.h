@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./qrpc_service_thread.h"
-#include "./qstm_util_variant.h"
+#include <QtReforce/QRpc>
+#include <QtReforce/QStm>
 
 namespace ServerService {
 
@@ -44,41 +44,41 @@ public:
 
     DispatcherServiceMessage&set(const QVariantHash&vBody){
         VariantUtil vu;
-        if(vBody.contains(qsl_fy(userName)))
-            this->username=vBody.value(qsl_fy(userName)).toString();
-        else if(vBody.contains(qsl_fy(username)))
-            this->username=vBody.value(qsl_fy(username)).toString();
+        if(vBody.contains(QT_STRINGIFY2(userName)))
+            this->username=vBody.value(QT_STRINGIFY2(userName)).toString();
+        else if(vBody.contains(QT_STRINGIFY2(username)))
+            this->username=vBody.value(QT_STRINGIFY2(username)).toString();
 
-        if(vBody.contains(qsl_fy(password)))
-            this->password=vBody.value(qsl_fy(password)).toString();
-        else if(vBody.contains(qsl_fy(passWord)))
-            this->password=vBody.value(qsl_fy(passWord)).toString();
+        if(vBody.contains(QT_STRINGIFY2(password)))
+            this->password=vBody.value(QT_STRINGIFY2(password)).toString();
+        else if(vBody.contains(QT_STRINGIFY2(passWord)))
+            this->password=vBody.value(QT_STRINGIFY2(passWord)).toString();
 
-        if(vBody.contains(qsl_fy(from)))
-            this->from=vBody.value(qsl_fy(from)).toString();
-        else if(vBody.contains(qsl_fy(userName)))
-            this->from=vBody.value(qsl_fy(userName)).toString();
-        else if(vBody.contains(qsl_fy(username)))
-            this->from=vBody.value(qsl_fy(username)).toString();
+        if(vBody.contains(QT_STRINGIFY2(from)))
+            this->from=vBody.value(QT_STRINGIFY2(from)).toString();
+        else if(vBody.contains(QT_STRINGIFY2(userName)))
+            this->from=vBody.value(QT_STRINGIFY2(userName)).toString();
+        else if(vBody.contains(QT_STRINGIFY2(username)))
+            this->from=vBody.value(QT_STRINGIFY2(username)).toString();
 
-        if(vBody.contains(qsl_fy(to)))
-            this->to=vBody.value(qsl_fy(to)).toString();
+        if(vBody.contains(QT_STRINGIFY2(to)))
+            this->to=vBody.value(QT_STRINGIFY2(to)).toString();
 
-        if(vBody.contains(qsl_fy(toName)))
-            this->toName=vBody.value(qsl_fy(toName)).toString();
+        if(vBody.contains(QT_STRINGIFY2(toName)))
+            this->toName=vBody.value(QT_STRINGIFY2(toName)).toString();
 
-        if(vBody.contains(qsl_fy(id)))
-            this->id=vBody.value(qsl_fy(id)).toString();
+        if(vBody.contains(QT_STRINGIFY2(id)))
+            this->id=vBody.value(QT_STRINGIFY2(id)).toString();
 
-        if(vBody.contains(qsl_fy(subject)))
-            this->subject=vBody.value(qsl_fy(subject)).toString();
-        else if(vBody.contains(qsl_fy(title)))
-            this->subject=vBody.value(qsl_fy(title)).toString();
+        if(vBody.contains(QT_STRINGIFY2(subject)))
+            this->subject=vBody.value(QT_STRINGIFY2(subject)).toString();
+        else if(vBody.contains(QT_STRINGIFY2(title)))
+            this->subject=vBody.value(QT_STRINGIFY2(title)).toString();
 
-        if(vBody.contains(qsl_fy(message)))
-            this->message=vBody.value(qsl_fy(message)).toString();
-        else if(vBody.contains(qsl_fy(payload)))
-            this->message=vBody.value(qsl_fy(payload)).toString();
+        if(vBody.contains(QT_STRINGIFY2(message)))
+            this->message=vBody.value(QT_STRINGIFY2(message)).toString();
+        else if(vBody.contains(QT_STRINGIFY2(payload)))
+            this->message=vBody.value(QT_STRINGIFY2(payload)).toString();
 
         this->schedule=QVariant();
         this->aggregateId=QVariant();
@@ -86,8 +86,8 @@ public:
         this->schedule=QVariant();
         this->callbackOption=QVariant();
 
-        if(vBody.contains(qsl_fy(attachment)))
-            this->attachment=vu.toList(vBody.value(qsl_fy(attachment)));
+        if(vBody.contains(QT_STRINGIFY2(attachment)))
+            this->attachment=vu.toList(vBody.value(QT_STRINGIFY2(attachment)));
         return*this;
     }
 };

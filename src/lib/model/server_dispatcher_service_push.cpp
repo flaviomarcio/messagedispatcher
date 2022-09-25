@@ -1,8 +1,8 @@
 #include "server_dispatcher_service_push.h"
 #include "./server_publisher.h"
 #include "./server_schedule_task.h"
-#include "./qrpc_request.h"
-#include "./qapr_application.h"
+#include <QtReforce/QRpc>
+#include <QtReforce/QApr>
 
 namespace ServerService {
 
@@ -35,7 +35,7 @@ void DispatcherServicePush::received(const QUuid &uuid, const QVariant&v)
         const QByteArray hostname = QString("https://fcm.googleapis.com/fcm/").toLatin1();
         const QByteArray route="send";
 
-        QRpc::QRPCRequest req;
+        QRpc::Request req;
         req.header().setRawHeader("Content-Type","application/json");
         req.header().setRawHeader("Authorization",QString("key=%1").arg(serverKey).toLatin1());
         req.header().setContentType(QRpc::AppJson);

@@ -23,7 +23,7 @@
                 ,"hostName" : "127.0.0.1"
                 ,"userName" : "magmav1"
                 ,"password" : "magmav1"
-                ,"port" : 5432
+                ,"port" : 25432
                 ,"dataBaseName" : "magmav1"
                 ,"schemaNames" : "public, msg_v1"
             }

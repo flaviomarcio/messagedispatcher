@@ -1,15 +1,9 @@
 #include "./server_dao_schedule.h"
-#include "./qorm_query.h"
 #include "./server_schedule_task.h"
 
 namespace ServerService {
 
 DaoSchedule::DaoSchedule(QObject *parent) : QOrm::Dao(parent)
-{
-
-}
-
-DaoSchedule::~DaoSchedule()
 {
 
 }
@@ -27,7 +21,7 @@ ResultValue &DaoSchedule::tasks_count_total(const QUuid &published_uuid)
         .equal(ScheduleTaskM.published_uuid_field(), published_uuid);
 
     if(!query.exec())
-        return this->lr(query.lastError());
+        return this->lr(query.lr());
 
     if (!query.next())
         return this->lr(QVariant(0));
@@ -49,7 +43,7 @@ ResultValue &DaoSchedule::tasks_count_month(const QUuid &published_uuid, const Q
         .between(ScheduleTaskM.dt_field(), du.minMonthDateTime(dt), du.maxMonthDateTime(dt));
 
     if(!query.exec())
-        return this->lr(query.lastError());
+        return this->lr(query.lr());
 
     if (!query.next())
         return this->lr(QVariant(0));
@@ -71,7 +65,7 @@ ResultValue &DaoSchedule::tasks_count_day(const QUuid &published_uuid, const QDa
         .between(ScheduleTaskM.dt_field(), du.minDateTime(dt), du.maxDateTime(dt));
 
     if(!query.exec())
-        return this->lr(query.lastError());
+        return this->lr(query.lr());
 
     if (!query.next())
         return this->lr(QVariant(0));

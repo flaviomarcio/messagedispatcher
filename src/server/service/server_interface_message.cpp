@@ -9,11 +9,6 @@ InterfaceMessage::InterfaceMessage(QObject *parent):ServerInterface(parent)
 
 }
 
-InterfaceMessage::~InterfaceMessage()
-{
-
-}
-
 QVariant InterfaceMessage::send()
 {
     QRPC_METHOD_CHECK_POST();

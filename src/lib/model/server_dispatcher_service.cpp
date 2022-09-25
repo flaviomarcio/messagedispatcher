@@ -1,5 +1,5 @@
 #include "./server_dispatcher_service.h"
-#include "./qapr_application.h"
+#include <QtReforce/QApr>
 
 
 namespace ServerService {

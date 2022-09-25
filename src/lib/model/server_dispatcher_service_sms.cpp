@@ -1,8 +1,8 @@
 #include "server_dispatcher_service_sms.h"
 #include "./server_publisher.h"
 #include "./server_schedule_task.h"
-#include "./qrpc_request.h"
-#include "./qapr_application.h"
+#include <QtReforce/QRpc>
+#include <QtReforce/QApr>
 
 namespace ServerService {
 
@@ -13,39 +13,39 @@ void DispatcherServiceSMS::received(const QUuid &uuid, const QVariant &v)
     QVariantHash vRequestMap;
     auto vHash=v.toHash();
     {
-        auto vBody=vHash[qsl_fy(vTask)].toHash();
-        auto to=qsl("+")+vBody[qsl("to")].toString().replace(qsl("+"),qsl_null);
-        to=to.replace(qsl("++"),qsl("+"));
+        auto vBody=vHash[QT_STRINGIFY2(vTask)].toHash();
+        auto to=QStringLiteral("+")+vBody[QStringLiteral("to")].toString().replace(QStringLiteral("+"),QString{});
+        to=to.replace(QStringLiteral("++"),QStringLiteral("+"));
         if(!to.startsWith("+55"))
-            to=qsl("+55")+to.replace(qsl("+"),qsl_null);
+            to=QStringLiteral("+55")+to.replace(QStringLiteral("+"),QString{});
         QVariantHash property;
-        property.insert(qsl("from"), vBody[qsl("from")]);
-        property.insert(qsl("to"), to);
-        property.insert(qsl("id"), uuid.toString());
-        property.insert(qsl("msg"), vBody[qsl("payload")]);
-        property.insert(qsl("schedule"), QVariant());
-        property.insert(qsl("aggregateId"), QVariant());
-        property.insert(qsl("flashSms"), false);
-        property.insert(qsl("schedule"), QVariant());
-        property.insert(qsl("callbackOption"), QVariant());
-        vRequestMap[qsl("sendSmsRequest")]=property;
+        property.insert(QStringLiteral("from"), vBody[QStringLiteral("from")]);
+        property.insert(QStringLiteral("to"), to);
+        property.insert(QStringLiteral("id"), uuid.toString());
+        property.insert(QStringLiteral("msg"), vBody[QStringLiteral("payload")]);
+        property.insert(QStringLiteral("schedule"), QVariant());
+        property.insert(QStringLiteral("aggregateId"), QVariant());
+        property.insert(QStringLiteral("flashSms"), false);
+        property.insert(QStringLiteral("schedule"), QVariant());
+        property.insert(QStringLiteral("callbackOption"), QVariant());
+        vRequestMap[QStringLiteral("sendSmsRequest")]=property;
     }
 
     {
         QRpc::ServiceSetting setting(this);
-        setting+=vHash[qsl_fy(setting)];
-        QRpc::QRPCRequest req;
+        setting+=vHash[QT_STRINGIFY2(setting)];
+        QRpc::Request req;
         req=setting;
         req.setBody(vRequestMap);
         auto&response=req.call(setting.route(), vRequestMap);
         QVariantHash vResponse, request;
         {
-            request[qsl("request")]= vRequestMap;
-            request[qsl("response")]= req.response().bodyHash();
+            request[QStringLiteral("request")]= vRequestMap;
+            request[QStringLiteral("response")]= req.response().bodyHash();
         }
-        vResponse[qsl("statusCode")]= response.statusCode();
-        vResponse[qsl("qtStatusCode")]= response.qtStatusCode();
-        vResponse[qsl("request")]= request;
+        vResponse[QStringLiteral("statusCode")]= response.statusCode();
+        vResponse[QStringLiteral("qtStatusCode")]= response.qtStatusCode();
+        vResponse[QStringLiteral("request")]= request;
         if(response.isOk()){
             emit request_success(uuid, vResponse);
         }

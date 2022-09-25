@@ -83,13 +83,13 @@ public:
                 if(metaObject->inherits(&DispatcherService::staticMetaObject)){
                     auto object=metaObject->newInstance( Q_ARG(QVariant, settings ), Q_ARG(QObject*, nullptr ));
                     if(object==nullptr)
-                        sWarning()<<qsl("inited fail:%1").arg(metaObject->className());
+                        sWarning()<<QStringLiteral("inited fail:%1").arg(metaObject->className());
                     else{
                         auto thread=dynamic_cast<DispatcherService*>(object);
                         thread->setObjectName(thread->metaObject()->className());
                         pool->append(thread);
                         thread->start();
-                        sWarning()<<qsl("inited:%1").arg(metaObject->className());
+                        sWarning()<<QStringLiteral("inited:%1").arg(metaObject->className());
                     }
                 }
             }
@@ -121,7 +121,7 @@ public:
 public slots:
     void on_dispacher(const QUuid&uuid, const QVariant&v){
         auto vHash=v.toHash();
-        auto&vTask=vHash[qsl_fy(vTask)];
+        auto&vTask=vHash[QT_STRINGIFY2(vTask)];
         ScheduleTask task(this, vTask);
         if(task.isValid()){
             auto&p=*this;

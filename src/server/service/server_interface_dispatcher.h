@@ -4,17 +4,17 @@
 
 namespace ServerService {
 
-    class InterfaceDispatcher : public ServerInterface
-    {
-        Q_OBJECT
-        QRPC_DECLARE_ROUTE(InterfaceDispatcher,"v1/dispatcher")
-    public:
-        Q_INVOKABLE explicit InterfaceDispatcher(QObject *parent=nullptr);
-        Q_INVOKABLE ~InterfaceDispatcher();
+class InterfaceDispatcher : public ServerInterface
+{
+    Q_OBJECT
+    Q_ANNOTATION(InterfaceDispatcher, {apiBasePath(QStringLiteral("v1/dispatcher"))})
+public:
+    Q_INVOKABLE explicit InterfaceDispatcher(QObject *parent=nullptr);
 
-        Q_INVOKABLE QVariant send();
-    };
+    Q_ANNOTATION(send, nl({opPost}))
+    Q_INVOKABLE QVariant send();
+};
 
-    QRPC_CONTROLLER_AUTO_REGISTER(InterfaceDispatcher)
+QRPC_CONTROLLER_AUTO_REGISTER(InterfaceDispatcher)
 
 }

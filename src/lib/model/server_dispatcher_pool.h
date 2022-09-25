@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QThread>
 #include <QList>
-#include "./server_types.h"
 
 namespace ServerService {
 
