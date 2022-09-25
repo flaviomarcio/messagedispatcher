@@ -44,10 +44,9 @@ ResultValue &ControllerShedule::insert(const QUuid&published_uuid, const QUuid&s
 
     Q_DECLARE_VU;
 
-    auto vvm=vu
-                   .makeVVM(PublisherProviderM.publisher_uuid_field(), published_uuid)
-                   .makeVVM(PublisherProviderM.provider_type_field(), provider_type)
-                   .toVVM();
+    auto vvm=QVVM{}
+            .insert(PublisherProviderM.publisher_uuid_field(), published_uuid)
+            .insert(PublisherProviderM.provider_type_field(), provider_type);
 
     Provider provider(this);
     ProviderGDao providerDao(this);
@@ -231,11 +230,10 @@ ResultValue &ControllerShedule::send(const QUuid &published_uuid, const QUuid &c
 
         Q_DECLARE_VU;
 
-        auto vvm=vu.clear()
-                       .makeVVM(PublisherProviderM.publisher_uuid_field(), published_uuid)
-                       .makeVVM(PublisherProviderM.provider_type_field(), provider_type)
-                       .makeVVM(PublisherProviderM.enabled_field(), true)
-                       .toVVM();
+        auto vvm=QVVM{}
+                .insert(PublisherProviderM.publisher_uuid_field(), published_uuid)
+                .insert(PublisherProviderM.provider_type_field(), provider_type)
+                .insert(PublisherProviderM.enabled_field(), true);
 
         Provider provider(this);
         ProviderGDao providerDao(this);
