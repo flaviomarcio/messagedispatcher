@@ -11,7 +11,6 @@ InterfaceMessage::InterfaceMessage(QObject *parent):ServerInterface(parent)
 
 QVariant InterfaceMessage::send()
 {
-    QRPC_METHOD_CHECK_POST();
     QRPC_V_SET_UUID(uuid);
     QRPC_V_SET(type);
     QRPC_V_SET_BYTE(to);
@@ -29,7 +28,6 @@ QVariant InterfaceMessage::send()
 
 QVariant InterfaceMessage::counters()
 {
-    QRPC_METHOD_CHECK_GET();
     ControllerShedule controller(this);
     if(!controller.counters(this->published_uuid))
         this->rq().co(controller.lr().sc());

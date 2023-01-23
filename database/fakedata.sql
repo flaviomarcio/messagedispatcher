@@ -45,7 +45,7 @@ on conflict(msg00aaa_uuid) do update set
 truncate table msg_v1.msg00baa_publisher cascade;
 insert into msg_v1.msg00baa_publisher(msg00baa_uuid, msg00baa_token_md5, msg00baa_name, msg00baa_title, msg00baa_enabled)
 values
- (md5('1')::uuid, md5('acl_account_token')::uuid ,'magma','Magma tecnologia',true)
+ (md5('1')::uuid, md5('acl_msg_token')::uuid ,'Company','Company',true)
 on conflict(msg00baa_uuid) do update set msg00baa_token_md5=excluded.msg00baa_token_md5;
 
 
@@ -99,7 +99,7 @@ values
     ,md5('1')::uuid
     ,md5('2')::uuid
     ,2--dsMail
-    ,'{"userName":"developer@magma-ma.com.br","password":"4NC7%Sb="}'
+    ,'{"userName":"developer@company.com.br","password":"4NC7%Sb="}'
     ,true
 ),
 (

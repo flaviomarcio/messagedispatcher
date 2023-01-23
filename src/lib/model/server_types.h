@@ -13,6 +13,11 @@ DeclareProviderType(ProviderType);
 static const QHash<QString,ProviderType> TaskTypeMap
     (
         {
+            {qsl_number(dsFake), dsFake},
+            {QT_STRINGIFY2(dsFake), dsFake},
+            {QT_STRINGIFY2(dsfake), dsFake},
+            {QT_STRINGIFY2(fale), dsFake},
+
             {qsl_number(dsMail), dsMail},
             {QT_STRINGIFY2(dsMail), dsMail},
             {QT_STRINGIFY2(dsmail), dsMail},
@@ -41,4 +46,4 @@ static const QHash<QString,ProviderType> TaskTypeMap
             {QT_STRINGIFY2(whatsapp), dsWhatsApp}
         } );
 
-static const auto TaskTypeList=QList<ProviderType>()<<dsFake<<dsMail<<dsSms<<dsPushNotification<<dsTelegram<<dsWhatsApp;
+static const auto TaskTypeList=QList<ProviderType>{dsFake,dsMail,dsSms,dsPushNotification,dsTelegram,dsWhatsApp};

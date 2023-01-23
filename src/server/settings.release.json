@@ -21,10 +21,10 @@
             "production":{
                  "driver" : "QPSQL"
                 ,"hostName" : "127.0.0.1"
-                ,"userName" : "magmav1"
-                ,"password" : "magmav1"
-                ,"port" : 25432
-                ,"dataBaseName" : "magmav1"
+                ,"userName" : "erpv1"
+                ,"password" : "ZjU0ODUyMjVi"
+                ,"port" : 5432
+                ,"dataBaseName" : "erpv1"
                 ,"schemaNames" : "public, msg_v1"
             }
         }

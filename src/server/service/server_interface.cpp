@@ -61,6 +61,8 @@ ServerInterface::ServerInterface(QObject *parent):QApr::Interface(parent)
 
 bool ServerInterface::authorization()
 {
+    if(!QApr::Interface::authorization())
+        return {};
     Q_DECLARE_VU;
     auto service_uuid = vu.toUuid(this->rq().authorizationService());
     auto vModel=__publishers.value(service_uuid.toString());

@@ -206,8 +206,7 @@ ResultValue &ControllerShedule::send(const QUuid &published_uuid, const QUuid &c
     ScheduleGDao daoSchedule(this);
     Schedule schedule(this);
 
-    Publisher publisher(this);
-    publisher.set_uuid(published_uuid);
+    Publisher publisher(published_uuid);
     PublisherGDao publisherDao(this);
 
     schedule.set_published_uuid(published_uuid);
