@@ -1,4 +1,4 @@
-TARGET = MessageServer
+TARGET = app
 TEMPLATE = app
 
 include($$PWD/server.pri)

@@ -43,8 +43,7 @@ include($$PWD/service/service_notify.pri)
 
 INCLUDEPATH += $$PWD
 
-RESOURCES+= \
-    $$PWD/app.qrc
+RESOURCES+=
 
 DISTFILES += \
     $$PWD/../../database/constraints.sql \
