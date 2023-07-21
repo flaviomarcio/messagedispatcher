@@ -1,1 +1,1 @@
-drop schema if not exists msg_v1 cascade;
+drop schema if exists msg_v1 cascade;
