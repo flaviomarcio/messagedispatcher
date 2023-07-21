@@ -1,0 +1,1 @@
+alter table msg_v1.msg00bac_publisher_provider add constraint ck_msg00bac_provider_type check(msg00bac_provider_type>=0);
